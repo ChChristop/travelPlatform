@@ -1,0 +1,52 @@
+{
+  "batch": "R4",
+  "session": "B",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "runtime",
+      "exitCode": 1,
+      "output": "TAP version 13\n# node:internal/modules/esm/resolve:275\n#     throw new ERR_MODULE_NOT_FOUND(\n#           ^\n# Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\src\\\\persistence\\\\index' imported from C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\tests\\\\persistence\\\\persistence.test.ts\n#     at finalizeResolution (node:internal/modules/esm/resolve:275:11)\n#     at moduleResolve (node:internal/modules/esm/resolve:860:10)\n#     at defaultResolve (node:internal/modules/esm/resolve:984:11)\n#     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)\n#     at \\#cachedDefaultResolve (node:internal/modules/esm/loader:704:25)\n#     at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)\n#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)\n#     at ModuleJob._link (node:internal/modules/esm/module_job:175:49) {\n#   code: 'ERR_MODULE_NOT_FOUND',\n#   url: 'file:///C:/Users/gm/Documents/travelPlatform/src/persistence/index'\n# }\n# Node.js v22.17.0\n# Subtest: tests\\\\persistence\\\\persistence.test.ts\nnot ok 1 - tests\\\\persistence\\\\persistence.test.ts\n  ---\n  duration_ms: 256.8565\n  type: 'test'\n  location: 'C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\tests\\\\persistence\\\\persistence.test.ts:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 271.2587\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "runtime",
+      "exitCode": 1,
+      "output": "TAP version 13\n# (node:32392) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# node:internal/modules/esm/resolve:275\n#     throw new ERR_MODULE_NOT_FOUND(\n#           ^\n# Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\src\\\\persistence\\\\envelope' imported from C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\src\\\\persistence\\\\index.ts\n#     at finalizeResolution (node:internal/modules/esm/resolve:275:11)\n#     at moduleResolve (node:internal/modules/esm/resolve:860:10)\n#     at defaultResolve (node:internal/modules/esm/resolve:984:11)\n#     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)\n#     at \\#cachedDefaultResolve (node:internal/modules/esm/loader:704:25)\n#     at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)\n#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)\n#     at ModuleJob._link (node:internal/modules/esm/module_job:175:49) {\n#   code: 'ERR_MODULE_NOT_FOUND',\n#   url: 'file:///C:/Users/gm/Documents/travelPlatform/src/persistence/envelope'\n# }\n# Node.js v22.17.0\n# Subtest: tests\\\\persistence\\\\persistence.test.ts\nnot ok 1 - tests\\\\persistence\\\\persistence.test.ts\n  ---\n  duration_ms: 253.8275\n  type: 'test'\n  location: 'C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\tests\\\\persistence\\\\persistence.test.ts:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 268.213\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "runtime",
+      "exitCode": 1,
+      "output": "TAP version 13\n# (node:32032) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# Subtest: Roundtrip: saveState then loadState returns deep-equal state\nok 1 - Roundtrip: saveState then loadState returns deep-equal state\n  ---\n  duration_ms: 8.7451\n  type: 'test'\n  ...\n# Subtest: Corrupted data: loadState returns error and does not modify storage\nnot ok 2 - Corrupted data: loadState returns error and does not modify storage\n  ---\n  duration_ms: 10.8577\n  type: 'test'\n  location: 'C:\\\\Users\\\\gm\\\\Documents\\\\travelPlatform\\\\tests\\\\persistence\\\\persistence.test.ts:95:1'\n  failureType: 'testCodeFailure'\n  error: 'entities is not iterable'\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    checkDuplicateIds (file:///C:/Users/gm/Documents/travelPlatform/src/domain/validation/reference-rules.ts:19:24)\n    validateReferenceRules (file:///C:/Users/gm/Documents/travelPlatform/src/domain/validation/reference-rules.ts:129:3)\n    validateState (file:///C:/Users/gm/Documents/travelPlatform/src/persistence/storage.ts:28:27)\n    loadState (file:///C:/Users/gm/Documents/travelPlatform/src/persistence/storage.ts:103:27)\n    TestContext.<anonymous> (file:///C:/Users/gm/Documents/travelPlatform/tests/persistence/persistence.test.ts:99:22)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n  ...\n# Subtest: Invalid JSON: loadState returns error and does not modify storage\nok 3 - Invalid JSON: loadState returns error and does not modify storage\n  ---\n  duration_ms: 0.3528\n  type: 'test'\n  ...\n# Subtest: Version mismatch: loadState returns error with clear reason\nok 4 - Version mismatch: loadState returns error with clear reason\n  ---\n  duration_ms: 0.4409\n  type: 'test'\n  ...\n# Subtest: Save failure: original value remains in storage\nok 5 - Save failure: original value remains in storage\n  ---\n  duration_ms: 0.3819\n  type: 'test'\n  ...\n# Subtest: Semantic validation: loadState rejects invalid state\nok 6 - Semantic validation: loadState rejects invalid state\n  ---\n  duration_ms: 0.4814\n  type: 'test'\n  ...\n# Subtest: Repeated import safety: same exportState string imported twice yields deep-equal state\nok 7 - Repeated import safety: same exportState string imported twice yields deep-equal state\n  ---\n  duration_ms: 0.7713\n  type: 'test'\n  ...\n# Subtest: exportState produces valid JSON that importState can parse\nok 8 - exportState produces valid JSON that importState can parse\n  ---\n  duration_ms: 0.4426\n  type: 'test'\n  ...\n# Subtest: loadState with no data returns error\nok 9 - loadState with no data returns error\n  ---\n  duration_ms: 0.69\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 8\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 336.2266\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "runtime",
+      "exitCode": 0,
+      "output": "TAP version 13\n# (node:34748) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# Subtest: Roundtrip: saveState then loadState returns deep-equal state\nok 1 - Roundtrip: saveState then loadState returns deep-equal state\n  ---\n  duration_ms: 8.5751\n  type: 'test'\n  ...\n# Subtest: Corrupted data: loadState returns error and does not modify storage\nok 2 - Corrupted data: loadState returns error and does not modify storage\n  ---\n  duration_ms: 0.449\n  type: 'test'\n  ...\n# Subtest: Invalid JSON: loadState returns error and does not modify storage\nok 3 - Invalid JSON: loadState returns error and does not modify storage\n  ---\n  duration_ms: 0.2557\n  type: 'test'\n  ...\n# Subtest: Version mismatch: loadState returns error with clear reason\nok 4 - Version mismatch: loadState returns error with clear reason\n  ---\n  duration_ms: 0.4068\n  type: 'test'\n  ...\n# Subtest: Save failure: original value remains in storage\nok 5 - Save failure: original value remains in storage\n  ---\n  duration_ms: 0.3918\n  type: 'test'\n  ...\n# Subtest: Semantic validation: loadState rejects invalid state\nok 6 - Semantic validation: loadState rejects invalid state\n  ---\n  duration_ms: 0.4665\n  type: 'test'\n  ...\n# Subtest: Repeated import safety: same exportState string imported twice yields deep-equal state\nok 7 - Repeated import safety: same exportState string imported twice yields deep-equal state\n  ---\n  duration_ms: 0.7112\n  type: 'test'\n  ...\n# Subtest: exportState produces valid JSON that importState can parse\nok 8 - exportState produces valid JSON that importState can parse\n  ---\n  duration_ms: 0.4373\n  type: 'test'\n  ...\n# Subtest: loadState with no data returns error\nok 9 - loadState with no data returns error\n  ---\n  duration_ms: 0.7864\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 328.6089\n"
+    }
+  ]
+}

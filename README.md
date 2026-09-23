@@ -654,13 +654,13 @@ Codex
 Local LLM Endpoint:
 
 ```text
-61.109.169.118:8503
+<내부망 전용 endpoint — .env.local(gitignored)의 LOCAL_LLM_BASE_URL 참고, .env.example 참고>
 ```
 
 OpenAI-compatible API인 경우 예:
 
 ```text
-http://61.109.169.118:8503/v1
+http://<internal-local-llm-host>:<port>/v1
 ```
 
 실제 Model ID는 실행 시 `/v1/models` 결과를 사용합니다.

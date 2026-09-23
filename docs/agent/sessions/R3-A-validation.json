@@ -1,0 +1,37 @@
+{
+  "batch": "R3",
+  "session": "A",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "scope",
+      "exitCode": 1,
+      "output": "src/domain/migrations/migrate.ts(204,11): error TS2375: Type '{ id: PlanItemId; planVersionId: PlanVersionId; type: PlanItemType; title: string; description: string | undefined; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; bookingPolicy: BookingPolicy | undefined; status: \"planned\"; detail: PlanItemDetail; }' is not assignable to type 'PlanItem' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.\n  Type '{ id: PlanItemId; planVersionId: PlanVersionId; type: PlanItemType; title: string; description: string | undefined; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; bookingPolicy: BookingPolicy | undefined; status: \"planned\"; detail: PlanItemDetail; }' is not assignable to type 'PlanItemBase & { type: \"custom\"; detail: CustomDetail; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.\n    Type '{ id: PlanItemId; planVersionId: PlanVersionId; type: PlanItemType; title: string; description: string | undefined; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; bookingPolicy: BookingPolicy | undefined; status: \"planned\"; detail: PlanItemDetail; }' is not assignable to type 'PlanItemBase' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.\n      Types of property 'description' are incompatible.\n        Type 'string | undefined' is not assignable to type 'string'.\n          Type 'undefined' is not assignable to type 'string'.\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 1,
+      "output": "src/domain/migrations/migrate.ts(213,11): error TS2375: Type '{ id: PlanItemId; planVersionId: PlanVersionId; title: string; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; status: 'planned'; type: PlanItemType; detail: PlanItemDetail; description?: string; bookingPolicy?: BookingPolicy; }' is not assignable to type 'PlanItem' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.\n  Type '{ id: PlanItemId; planVersionId: PlanVersionId; title: string; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; status: 'planned'; type: PlanItemType; detail: PlanItemDetail; description?: string; bookingPolicy?: BookingPolicy; }' is not assignable to type 'PlanItemBase & { type: \"custom\"; detail: CustomDetail; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.\n    Type '{ id: PlanItemId; planVersionId: PlanVersionId; title: string; schedule: { start: ISODateTime; end: ISODateTime; }; places: PlaceReference[]; status: 'planned'; type: PlanItemType; detail: PlanItemDetail; description?: string; bookingPolicy?: BookingPolicy; }' is not assignable to type '{ type: \"custom\"; detail: CustomDetail; }'.\n      Types of property 'type' are incompatible.\n        Type 'PlanItemType' is not assignable to type '\"custom\"'.\n          Type '\"attraction\"' is not assignable to type '\"custom\"'.\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "migrationRun",
+      "exitCode": 0,
+      "output": "(node:20928) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\nMigration complete. Report written to docs/migration/KANSAI_REPORT.md\nEvents: 49, Todos: 7\nCoordinates: 43 bearing, 6 missing\nMissing: seizen, bajitofu, kyorinsen, kanei, rakukanki, quattro\n"
+    },
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "migrationRun",
+      "exitCode": 0,
+      "output": "(node:32332) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\nMigration complete. Report written to docs/migration/KANSAI_REPORT.md\nEvents: 49, Todos: 7\nCoordinates: 43 bearing, 6 missing\nMissing: seizen, bajitofu, kyorinsen, kanei, rakukanki, quattro\n"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Travel Platform — Incremental Implementation Roadmap
 
+> 현재 재구축의 실행 순서와 기존 UI 연결 전략은 [Domain 우선 실행 명세](docs/EXECUTION_SPEC.md)를 우선합니다. 아래 원문은 이전 계획의 이력으로 보존합니다.
+
 > 목적: 현재 디자인이 크게 수정된 기존 React 프로젝트를 보존하면서, `travel-platform-domain-design.md`의 도메인 구조를 단계적으로 적용한다.  
 > 구현 주체: Local Qwen3.8-27B 중심  
 > 감독/검증: Codex 중심  

@@ -1,0 +1,12 @@
+{
+  "batch": "R2",
+  "session": "A1",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    }
+  ]
+}

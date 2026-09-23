@@ -6,7 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck:domain": "tsc -p tsconfig.domain.json",
+    "test:domain": "tsc -p tsconfig.domain.json",
+    "test:domain:runtime": "node --experimental-strip-types --test tests/domain/runtime/*.test.ts",
+    "typecheck:migrations": "tsc -p tsconfig.migrations.json",
+    "test:migrations": "node --experimental-strip-types --test tests/migrations/*.test.ts",
+    "migrate:run": "node --experimental-strip-types src/domain/migrations/run.ts",
+    "typecheck:selectors-persistence": "tsc -p tsconfig.selectors-persistence.json",
+    "test:selectors": "node --experimental-strip-types --test tests/selectors/*.test.ts",
+    "test:persistence": "node --experimental-strip-types --test tests/persistence/*.test.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

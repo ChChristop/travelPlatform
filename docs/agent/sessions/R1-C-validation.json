@@ -1,0 +1,11 @@
+{
+  "session": "C",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "docs",
+      "exitCode": 0,
+      "output": "[{\"path\":\"docs/EXECUTION_SPEC.md\",\"characters\":5774},{\"path\":\"docs/decisions/ADR-0001-domain-first-rebuild.md\",\"characters\":2080},{\"path\":\"IMPLEMENTATION_ROADMAP.md\",\"characters\":11351}]"
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 > 목표: Local Qwen3.8-27B를 실제 구현 작업에 최대한 활용하고, Codex는 작업 분해·지시·Diff 검증·테스트 검증에 집중하여 Codex 토큰 사용량을 줄인다.
 
+> **세션/에이전트가 바뀌어도 반드시 먼저 읽을 문서**: [docs/agent/RUNNER_GUIDE.md](docs/agent/RUNNER_GUIDE.md) — local-runner.mjs 사용법, 실제로 겪은 문제와 해결책, 배치 완료마다 재실행해야 하는 검증 명령 전체 목록. 여기(AGENT_WORKFLOW.md)에 없는 운영 디테일은 그 문서에 있다.
+
 ---
 
 # 1. 역할 분담
@@ -68,18 +70,58 @@ Escalation Agent
 
 ---
 
+# 1.1 Local Qwen 병렬 세션 정책
+
+Local Qwen3.8-27B는 동시에 3~4명까지 사용할 수 있다.
+
+작업 성격에 따라 병렬 세션 수를 조절한다.
+
+- 가벼운 작업: 최대 4개 세션
+- 중간 작업: 2~3개 세션
+- 무거운 작업: 최대 2개 세션
+
+가벼운 작업 예:
+
+- 타입 정의
+- 테스트 작성
+- 문서화
+- 단순 Selector
+- 반복적인 CRUD
+- 서로 독립적인 Component wiring
+
+무거운 작업 예:
+
+- 대규모 Migration
+- Store 구조 변경
+- 복잡한 State 전환
+- Simulation
+- LIVE 상태 처리
+- 광범위한 Refactor
+
+병렬 작업 시 동일 파일을 여러 세션이 동시에 수정하지 않도록 작업 범위를 분리한다.
+
+가능하면 다음처럼 역할을 분할한다.
+
+Session A → 구현
+Session B → 테스트
+Session C → 별도 독립 모듈 구현
+Session D → 문서/검증
+
+무거운 작업에서는:
+
+Session A → 주 구현
+Session B → 테스트 / 검증
+
+형태를 우선한다.
+
 # 2. Local Model Endpoint
 
-현재 Local LLM endpoint:
+Local LLM endpoint는 저장소에 커밋하지 않는다. 실제 값은 `.env.local`(gitignored)의 `LOCAL_LLM_BASE_URL`에 두고, 형식은 `.env.example`을 참고한다.
+
+vLLM/OpenAI-compatible endpoint인 경우 권장 Base URL 형식:
 
 ```text
-61.109.169.118:8503
-```
-
-vLLM/OpenAI-compatible endpoint인 경우 권장 Base URL:
-
-```text
-http://61.109.169.118:8503/v1
+http://<internal-local-llm-host>:<port>/v1
 ```
 
 단, 실제 API 형식과 Model ID는 **첫 실행 시 확인**한다.
@@ -87,7 +129,7 @@ http://61.109.169.118:8503/v1
 예:
 
 ```bash
-curl http://61.109.169.118:8503/v1/models
+curl "$LOCAL_LLM_BASE_URL/models"
 ```
 
 응답에서 실제 model id를 사용한다.
@@ -129,9 +171,11 @@ Repository에 실제 endpoint를 코드로 박지 않는다.
 예:
 
 ```bash
-LOCAL_LLM_BASE_URL=http://61.109.169.118:8503/v1
+LOCAL_LLM_BASE_URL=http://<internal-local-llm-host>:<port>/v1
 LOCAL_LLM_MODEL=<resolved-model-id>
 ```
+
+(실제 값은 `.env.local`에만 둔다. `.env.example` 참고.)
 
 API key를 요구하지 않는 Local vLLM이면 dummy key가 필요한 client도 있을 수 있다.
 
@@ -222,30 +266,37 @@ Codex 토큰 절약을 위해 반드시 간결하게 유지한다.
 # Handoff
 
 ## Result
+
 PASS / PARTIAL / FAIL
 
 ## Changed
+
 - src/domain/plan.ts
 - src/store/domainStore.ts
 - ...
 
 ## Summary
+
 - Added PlanItem discriminated union.
 - Added normalized entity store.
 - No UI changes.
 
 ## Validation
+
 - npm run build: PASS
 - npm run lint: PASS
 - npm test -- domain: PASS
 
 ## Risks
+
 - Legacy trip migration not implemented yet.
 
 ## Diff
+
 12 files changed, +420/-35
 
 ## Next
+
 Phase 3 legacy migration adapter.
 ```
 
@@ -271,6 +322,38 @@ Local Agent의 장황한 작업 과정은 Codex에게 매번 전달하지 않는
 Codex는 문제가 있을 때만 읽는다.
 
 ---
+
+# Parallel Task Coordination
+
+병렬 세션을 사용할 경우 Codex는 CURRENT_TASK.md에 다음을 명시한다.
+
+- Session ID
+- 담당 Subtask
+- 수정 가능 파일
+- 수정 금지 파일
+- 의존 관계
+- 완료 조건
+
+예:
+
+Session A
+
+- Domain types
+- src/domain/\*\*
+
+Session B
+
+- Domain unit tests
+- src/domain/\*_/_.test.\*
+
+Session C
+
+- Documentation
+- docs/\*\*
+
+서로 같은 파일을 수정하지 않는다.
+
+병렬 작업 완료 후 Codex가 HANDOFF와 diff를 통합 검토한다.
 
 # 9. Token-Minimized Codex Review Flow
 
@@ -504,21 +587,21 @@ Codex는 Phase review 시 다음을 확인한다.
 
 # 17. Phase별 Agent 역할
 
-| Phase | Local Qwen | Codex |
-|---|---|---|
-| Repo Audit | 분석/문서화 | 결과 검증 |
-| Domain Types | 구현 | 타입/관계 검증 |
-| Store | 구현 | 정규화 검증 |
-| Migration | 구현/테스트 | 데이터 손실 검증 |
-| Selectors | 구현/테스트 | View 중복 검증 |
-| Multi Project | 구현 | Route/State 검증 |
-| Booking | 구현 | Domain 검증 |
-| Cost | 구현 | 집계/Breakdown 검증 |
-| OptionGroup | 구현 | 대체 구조 검증 |
-| Preview | 구현 | 영향 계산 검증 |
-| Simulation | 구현 | deterministic 여부 검증 |
-| LIVE | 구현 | 계획/실제 분리 검증 |
-| Sharing | 구현 | privacy boundary 검증 |
+| Phase         | Local Qwen  | Codex                   |
+| ------------- | ----------- | ----------------------- |
+| Repo Audit    | 분석/문서화 | 결과 검증               |
+| Domain Types  | 구현        | 타입/관계 검증          |
+| Store         | 구현        | 정규화 검증             |
+| Migration     | 구현/테스트 | 데이터 손실 검증        |
+| Selectors     | 구현/테스트 | View 중복 검증          |
+| Multi Project | 구현        | Route/State 검증        |
+| Booking       | 구현        | Domain 검증             |
+| Cost          | 구현        | 집계/Breakdown 검증     |
+| OptionGroup   | 구현        | 대체 구조 검증          |
+| Preview       | 구현        | 영향 계산 검증          |
+| Simulation    | 구현        | deterministic 여부 검증 |
+| LIVE          | 구현        | 계획/실제 분리 검증     |
+| Sharing       | 구현        | privacy boundary 검증   |
 
 ---
 

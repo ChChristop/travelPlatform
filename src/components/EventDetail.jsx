@@ -22,8 +22,10 @@ export default function EventDetail({ event, onClear }) {
         <button className="clearBtn" onClick={onClear}>현재 일정으로</button>
       </div>
       <div className="detail">
-        <div className="detailType" style={{ background: t.color }}>{t.label}</div>
-        <h2 className="detailTitle">{event.title}</h2>
+        <div className="detailHead">
+          <div className="detailType" style={{ background: t.color }}>{t.label}</div>
+          <h2 className="detailTitle">{event.title}</h2>
+        </div>
         <div className="detailTime">{fmt(new Date(event.start))} ~ {fmt(new Date(event.end))} · JST</div>
         <div className="chips">
           <span className="chip">{event.city}</span>

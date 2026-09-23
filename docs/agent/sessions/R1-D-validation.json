@@ -1,0 +1,26 @@
+{
+  "session": "D",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "domain",
+      "exitCode": 1,
+      "output": "tests/domain/contracts.type-test.ts(311,7): error TS2741: Property 'workspaceId' is missing in type '{ id: PlaceId; name: string; }' but required in type 'Place'.\ntests/domain/contracts.type-test.ts(313,3): error TS2578: Unused '@ts-expect-error' directive.\ntests/domain/contracts.type-test.ts(325,7): error TS2741: Property 'projectId' is missing in type '{ id: BookingId; planItemIds: PlanItemId[]; type: \"hotel\"; status: \"confirmed\"; }' but required in type 'Booking'.\ntests/domain/contracts.type-test.ts(329,3): error TS2578: Unused '@ts-expect-error' directive.\ntests/domain/contracts.type-test.ts(345,7): error TS2741: Property 'projectId' is missing in type '{ id: CostRecordId; subject: { type: \"planItem\"; id: PlanItemId; }; type: \"actual\"; category: \"lodging\"; total: { amount: number; currency: string; }; payment: PaymentInfo; }' but required in type 'CostRecord'.\ntests/domain/contracts.type-test.ts(351,3): error TS2578: Unused '@ts-expect-error' directive.\n"
+    },
+    {
+      "kind": "build",
+      "exitCode": 0,
+      "output": "\u001b[36mvite v8.3.0 \u001b[32mbuilding client environment for production...\u001b[36m\u001b[39m\ntransforming...\n✓ 25 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.45 kB │ gzip:  0.29 kB\ndist/assets/index-CnuBSSEv.css   27.56 kB │ gzip:  9.31 kB\ndist/assets/index-CuyuPGnQ.js   318.28 kB │ gzip: 99.09 kB\n\n\u001b[32m✓ built in 376ms\u001b[39m\n"
+    },
+    {
+      "kind": "domain",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "kind": "build",
+      "exitCode": 0,
+      "output": "\u001b[36mvite v8.3.0 \u001b[32mbuilding client environment for production...\u001b[36m\u001b[39m\ntransforming...\n✓ 25 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.45 kB │ gzip:  0.29 kB\ndist/assets/index-CnuBSSEv.css   27.56 kB │ gzip:  9.31 kB\ndist/assets/index-CuyuPGnQ.js   318.28 kB │ gzip: 99.09 kB\n\n\u001b[32m✓ built in 346ms\u001b[39m\n"
+    }
+  ]
+}

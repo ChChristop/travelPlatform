@@ -1,0 +1,11 @@
+{
+  "session": "A",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "scope",
+      "exitCode": 0,
+      "output": ""
+    }
+  ]
+}
