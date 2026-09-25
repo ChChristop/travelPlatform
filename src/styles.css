@@ -134,7 +134,10 @@ button{cursor:pointer}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .chip{background:var(--line-2);border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--ink-2)}
 .chip.price{background:var(--accent-soft);color:var(--accent)}
-.detailNote{color:var(--ink-2);font-size:13.5px;line-height:1.5;margin:4px 0 12px}
+.detailNote{color:var(--ink-2);font-size:13.5px;line-height:1.5;margin:4px 0 8px;white-space:pre-line}
+.detailLinks{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin:0 0 12px}
+.detailLinks a{font-size:11px;font-weight:700;color:var(--accent);text-decoration:none;line-height:1.4;overflow-wrap:anywhere}
+.detailLinks a:hover{text-decoration:underline}
 .detailRows{display:flex;flex-direction:column;gap:1px;background:var(--line-2);border-radius:10px;padding:2px}
 .dRow{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;background:var(--surface);border-radius:8px}
 .dRowKey{display:flex;align-items:center;gap:5px;width:50px;flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--ink-3)}

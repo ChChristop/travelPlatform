@@ -41,6 +41,9 @@ export default function EventDetail({ event, currentId, onClear, packingChecked 
           {event.price && <span className="chip price">{event.price}</span>}
         </div>
         {event.note && <p className="detailNote">{event.note}</p>}
+        {event.links?.length > 0 && <div className="detailLinks">
+          {event.links.map(link => <a href={link.url} key={link.url} target="_blank" rel="noreferrer">{link.label} ↗</a>)}
+        </div>}
 
         <div className="detailRows">
           {event.id === 'trip-depart' && <button className="packingOpenBtn" onClick={onOpenPacking}>

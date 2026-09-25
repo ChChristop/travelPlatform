@@ -42,13 +42,31 @@ const E = (id, start, end, title, city, type, options = {}) => ({
   price: options.price,
   reservation: options.reservation,
   transport: options.transport,
+  links: options.links ?? [],
 })
 
 export const events = [
   E('trip-depart','2026-09-26T12:10:00+09:00','2026-09-26T16:10:00+09:00','출발','이동','transit',{lat:37.4602,lng:126.4407}),
   E('icn-depart','2026-09-26T16:10:00+09:00','2026-09-26T18:05:00+09:00','인천 T2 → 간사이공항 T1','이동','flight',{lat:37.4602,lng:126.4407,prep:'탑승권·여권 확인',prepMinutes:120,transport:'LJ239'}),
-  E('kix-arrive','2026-09-26T18:05:00+09:00','2026-09-26T19:20:00+09:00','입국심사 · 수하물','오사카','arrival',{lat:34.4347,lng:135.2441,prep:'ICOCA/현금·데이터 연결 점검'}),
-  E('kamu-kix','2026-09-26T19:20:00+09:00','2026-09-26T20:00:00+09:00','도톤보리 카무쿠라 KIX점','오사카','food',{lat:34.4347,lng:135.2441,price:'약 ¥890',note:'첫 일본 음식은 라멘'}),
+  E('kix-arrive','2026-09-26T18:05:00+09:00','2026-09-26T19:00:00+09:00','입국심사 · 수하물 · 세관 전 엔화 인출','오사카','arrival',{
+    lat:34.4347,lng:135.2441,prep:'Visit Japan Web QR 준비 · SOL트래블J 사용',
+    note:'18:10~ 입국심사 → 수하물 수령. 세관 통과 전에 T1 1층 입국 세관검사장 안에서 엔화 인출.\n1순위: 북측 ATM (北側1F 入国税関検査場). 반대편: 남측 ATM (南側1F 入国税関検査場). 두 곳 모두 24시간 운영 및 해외발행 카드 이용 가능 표시.\nSOL트래블J로 ¥20,000~30,000 인출.\n놓쳤다면 세관 통과 후 T1 2층 남쪽 국내선 출발구 ATM 코너, ANA 카운터 앞 AEON BANK를 대체 이용.',
+    links:[
+      {label:'AEON BANK · 북측 세관장 ATM',url:'https://map.aeonbank.co.jp/aeonbank/spot/detail?code=0000006961'},
+      {label:'AEON BANK · 남측 세관장 ATM',url:'https://map.aeonbank.co.jp/aeonbank/spot/detail?code=0000006960'},
+      {label:'AEON BANK · 놓쳤을 때 T1 2F ATM',url:'https://map.aeonbank.co.jp/aeonbank/spot/detail?code=0000003487'},
+    ],
+  }),
+  E('kamu-kix','2026-09-26T19:00:00+09:00','2026-09-26T19:40:00+09:00','도톤보리 카무쿠라(どうとんぼり神座)','오사카','food',{
+    lat:34.4347,lng:135.2441,price:'약 ¥890',query:'どうとんぼり神座 関西国際空港 第1ターミナル',
+    note:'주문 메뉴: 맛있는 라멘(おいしいラーメン).\n19:00~19:40 · 일본에서의 첫 식사.\n위치: 간사이공항 T1 2층 Tasty Street. 공식 매장 안내 기준 제1터미널 2층, 보안검색 전 구역.',
+    links:[{label:'간사이공항 공식 · 카무쿠라 매장 위치',url:'https://www.kansai-airport.or.jp/dine/d078'}],
+  }),
+  E('kix-to-station','2026-09-26T19:40:00+09:00','2026-09-26T20:00:00+09:00','간사이공항역 이동 · ICOCA 구입/충전','오사카','transit',{
+    lat:34.4347,lng:135.2441,transport:'식사 후 T1 2층 연결통로를 통해 역으로 이동',
+    note:'식사 후 T1 2층 연결통로를 건너 JR/난카이 간사이공항역(関西空港駅)으로 이동. 역은 T1 2층과 직결.\nICOCA 구입: JR 자동발매기 또는 JR 창구에서 ¥2,000 (보증금 ¥500 + 사용 잔액 ¥1,500).\nICOCA 충전: 같은 JR 발매기/충전기에서 우선 ¥3,000~5,000 충전.',
+    links:[{label:'간사이공항 공식 · 역 위치/접근',url:'https://www.kansai-airport.or.jp/access/to-airport/train'}],
+  }),
   E('to-osaka','2026-09-26T20:00:00+09:00','2026-09-26T21:15:00+09:00','KIX → 신사이바시','오사카','transit',{lat:34.6751,lng:135.5004,transport:'철도',prep:'호텔 주소 준비'}),
   E('sarasa-checkin','2026-09-26T21:15:00+09:00','2026-09-26T21:40:00+09:00','SARASA HOTEL Shinsaibashi 체크인','오사카','hotel',{lat:34.6751,lng:135.5004,query:'SARASA HOTEL Shinsaibashi Osaka'}),
   E('late-snack','2026-09-26T21:40:00+09:00','2026-09-26T23:00:00+09:00','야식 선택 슬롯','오사카','flex',{lat:34.6751,lng:135.5004,note:'푸딩/슈크림 · 타코야키 · 가벼운 이자카야'}),
