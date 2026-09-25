@@ -97,6 +97,7 @@ export default function App() {
   const [timelineFocus, setTimelineFocus] = useState({ id: null, version: 0 })
   const [gps, setGps] = useState(null)
   const [gpsError, setGpsError] = useState('')
+  const lastFollowState = useRef({ enabled: true, currentId: null })
   const [done, setDone] = useState(() => JSON.parse(localStorage.getItem('trip.todo.done') || '{}'))
   const [packingChecked, setPackingChecked] = useState(() => {
     try { return JSON.parse(localStorage.getItem('trip.packing.checked') || '{}') || {} }
@@ -121,6 +122,11 @@ export default function App() {
   useEffect(() => localStorage.setItem('trip.todo.done', JSON.stringify(done)), [done])
   useEffect(() => localStorage.setItem('trip.packing.checked', JSON.stringify(packingChecked)), [packingChecked])
   useEffect(() => localStorage.setItem('trip.convenience.checked', JSON.stringify(convenienceChecked)), [convenienceChecked])
+  useEffect(() => {
+    const previous = lastFollowState.current
+    if (follow && (!previous.enabled || previous.currentId !== state.current?.id)) setSelected(null)
+    lastFollowState.current = { enabled: follow, currentId: state.current?.id ?? null }
+  }, [follow, state.current?.id])
 
   const askGps = () => {
     if (!navigator.geolocation) { setGpsError('이 브라우저는 GPS를 지원하지 않습니다.'); return }
@@ -131,9 +137,7 @@ export default function App() {
   }
   const upcoming = state.next
   const minsToUpcoming = upcoming ? Math.round((ms(upcoming.start) - activeTime.getTime()) / 60000) : null
-  const detailEvent = follow
-    ? (state.current || upcoming)
-    : (selected || state.current || upcoming)
+  const detailEvent = selected || state.current || upcoming
   const showCurrentSchedule = () => {
     const target = state.current || upcoming
     setSelected(null)
