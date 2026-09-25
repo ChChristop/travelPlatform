@@ -1,6 +1,6 @@
 export const tripMeta = {
   title: '오사카 · 나라 · 교토 · 고베',
-  start: '2026-09-26T16:10:00+09:00',
+  start: '2026-09-26T12:10:00+09:00',
   end: '2026-10-01T18:30:00+09:00',
   timezone: 'Asia/Tokyo',
 }
@@ -45,6 +45,7 @@ const E = (id, start, end, title, city, type, options = {}) => ({
 })
 
 export const events = [
+  E('trip-depart','2026-09-26T12:10:00+09:00','2026-09-26T16:10:00+09:00','출발','이동','transit',{lat:37.4602,lng:126.4407}),
   E('icn-depart','2026-09-26T16:10:00+09:00','2026-09-26T18:05:00+09:00','인천 T2 → 간사이공항 T1','이동','flight',{lat:37.4602,lng:126.4407,prep:'탑승권·여권 확인',prepMinutes:120,transport:'LJ239'}),
   E('kix-arrive','2026-09-26T18:05:00+09:00','2026-09-26T19:20:00+09:00','입국심사 · 수하물','오사카','arrival',{lat:34.4347,lng:135.2441,prep:'ICOCA/현금·데이터 연결 점검'}),
   E('kamu-kix','2026-09-26T19:20:00+09:00','2026-09-26T20:00:00+09:00','도톤보리 카무쿠라 KIX점','오사카','food',{lat:34.4347,lng:135.2441,price:'약 ¥890',note:'첫 일본 음식은 라멘'}),
@@ -102,11 +103,6 @@ export const events = [
 ]
 
 export const todos = [
-  { id:'r1', label:'아부리야 우메다점 예약', date:'2026-09-27', priority:1 },
-  { id:'r2', label:'돈카츠 세이젠 예약', date:'2026-09-28', priority:2 },
   { id:'r3', label:'바지토후 전화 예약 (075-255-1311)', date:'2026-09-28', priority:3 },
-  { id:'r4', label:'쿄린센 예약', date:'2026-09-29', priority:4 },
   { id:'r5', label:'카네이 전화 예약 (075-441-8283)', date:'2026-09-29', priority:5 },
-  { id:'pass', label:'오사카 주유패스 1일권(¥3,500) 구매', date:'2026-09-27', priority:2 },
-  { id:'fresh', label:'출발 전 편의점 신상품·날씨·교통 최종 확인', date:'2026-09-25', priority:1 },
 ]

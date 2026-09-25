@@ -2,7 +2,7 @@ import React from 'react'
 import { typeOf, hasPos, fmt } from '../data/trip'
 import { IconGear, IconArrowRight, IconPen, IconWarning, IconMap } from './Icons'
 
-export default function EventDetail({ event, onClear }) {
+export default function EventDetail({ event, currentId, onClear }) {
   if (!event) {
     return (
       <section className="panel detailPanel">
@@ -15,18 +15,26 @@ export default function EventDetail({ event, onClear }) {
     )
   }
   const t = typeOf(event.type)
+  const startShort = shortDateTime(event.start)
+  const endShort = shortDateTime(event.end)
   return (
     <section className="panel detailPanel">
       <div className="panelHead">
         <strong>상세</strong>
-        <button className="clearBtn" onClick={onClear}>현재 일정으로</button>
+        <button
+          className={`clearBtn currentScheduleBtn ${event.id === currentId ? 'isCurrent' : ''}`}
+          aria-pressed={event.id === currentId}
+          onClick={onClear}>현재 일정</button>
       </div>
       <div className="detail">
         <div className="detailHead">
           <div className="detailType" style={{ background: t.color }}>{t.label}</div>
           <h2 className="detailTitle">{event.title}</h2>
         </div>
-        <div className="detailTime">{fmt(new Date(event.start))} ~ {fmt(new Date(event.end))} · JST</div>
+        <div className="detailTime">
+          <span className="detailTimeFull">{fmt(new Date(event.start))} ~ {fmt(new Date(event.end))} · JST</span>
+          <span className="detailTimeCompact">{startShort.day === endShort.day ? `${startShort.label}–${endShort.time}` : `${startShort.label}–${endShort.label}`} · JST</span>
+        </div>
         <div className="chips">
           <span className="chip">{event.city}</span>
           {event.price && <span className="chip price">{event.price}</span>}
@@ -45,6 +53,19 @@ export default function EventDetail({ event, onClear }) {
       </div>
     </section>
   )
+}
+
+function shortDateTime(value) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Seoul', year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date(value))
+  const get = type => parts.find(part => part.type === type)?.value ?? ''
+  return {
+    day: `${get('year')}-${get('month')}-${get('day')}`,
+    label: `${get('month')}/${get('day')} ${get('hour')}:${get('minute')}`,
+    time: `${get('hour')}:${get('minute')}`,
+  }
 }
 
 function Row({ label, value, icon }) {

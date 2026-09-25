@@ -40,11 +40,6 @@ export default function ClockPanel({ mode, setMode, activeTime, playing, setPlay
             onChange={e => setSimTime(new Date(e.target.value + '+09:00'))} />
         </div>
       )}
-      <div className="modeSwitch" role="tablist">
-        <button className={mode === 'live' ? 'active' : ''} onClick={() => setMode('live')}>LIVE</button>
-        <button className={mode === 'sim' ? 'active' : ''} onClick={() => setMode('sim')}>SIM</button>
-      </div>
-
     </section>
   )
 }
