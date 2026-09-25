@@ -7,6 +7,8 @@ import MapPanel from './components/MapPanel'
 import Timeline from './components/Timeline'
 import EventDetail from './components/EventDetail'
 import TodoList from './components/TodoList'
+import PackingChecklistModal from './components/PackingChecklistModal'
+import ConvenienceListModal from './components/ConvenienceListModal'
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
@@ -96,6 +98,16 @@ export default function App() {
   const [gps, setGps] = useState(null)
   const [gpsError, setGpsError] = useState('')
   const [done, setDone] = useState(() => JSON.parse(localStorage.getItem('trip.todo.done') || '{}'))
+  const [packingChecked, setPackingChecked] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('trip.packing.checked') || '{}') || {} }
+    catch { return {} }
+  })
+  const [packingOpen, setPackingOpen] = useState(false)
+  const [convenienceChecked, setConvenienceChecked] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('trip.convenience.checked') || '{}') || {} }
+    catch { return {} }
+  })
+  const [convenienceOpen, setConvenienceOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const activeTime = mode === 'live' ? now : simTime
@@ -107,6 +119,8 @@ export default function App() {
   useEffect(() => { if (mode !== 'sim' || !playing) return; const id = setInterval(() => setSimTime(t => { const base = Number.isFinite(t.getTime()) ? t.getTime() : ms(tripMeta.start); return new Date(Math.min(ms(tripMeta.end), base + speed * 1000)) }), 1000); return () => clearInterval(id) }, [mode, playing, speed])
   useEffect(() => { if (simTime.getTime() >= ms(tripMeta.end)) setPlaying(false) }, [simTime])
   useEffect(() => localStorage.setItem('trip.todo.done', JSON.stringify(done)), [done])
+  useEffect(() => localStorage.setItem('trip.packing.checked', JSON.stringify(packingChecked)), [packingChecked])
+  useEffect(() => localStorage.setItem('trip.convenience.checked', JSON.stringify(convenienceChecked)), [convenienceChecked])
 
   const askGps = () => {
     if (!navigator.geolocation) { setGpsError('이 브라우저는 GPS를 지원하지 않습니다.'); return }
@@ -139,7 +153,8 @@ export default function App() {
         <div className="stack">
           <Timeline events={events} currentTime={activeTime.getTime()}
             currentId={state.current?.id} selectedId={selected?.id} onSelect={setSelected} scrollTarget={timelineFocus} follow={follow} />
-          <EventDetail event={detailEvent} currentId={state.current?.id} onClear={showCurrentSchedule} />
+          <EventDetail event={detailEvent} currentId={state.current?.id} onClear={showCurrentSchedule}
+            packingChecked={packingChecked} onOpenPacking={() => setPackingOpen(true)} />
         </div>
         <MapPanel mapEl={mapEl} follow={follow} setFollow={setFollow} gps={gps} gpsError={gpsError} askGps={askGps} />
       </main>
@@ -151,10 +166,20 @@ export default function App() {
               <strong>준비 체크</strong>
               <button className="clearBtn" onClick={() => setMenuOpen(false)}>닫기</button>
             </div>
+            <button className="convenienceOpenBtn" onClick={() => { setMenuOpen(false); setConvenienceOpen(true) }}>
+              <span>편의점 목록</span><strong>{Object.values(convenienceChecked).filter(Boolean).length}/13 체크</strong><i aria-hidden="true">›</i>
+            </button>
             <TodoList todos={todos} done={done} onToggle={id => setDone(d => ({ ...d, [id]: !d[id] }))} bare />
           </div>
         </div>
       )}
+
+      {packingOpen && <PackingChecklistModal checked={packingChecked}
+        onToggle={id => setPackingChecked(previous => ({ ...previous, [id]: !previous[id] }))}
+        onClose={() => setPackingOpen(false)} />}
+      {convenienceOpen && <ConvenienceListModal checked={convenienceChecked}
+        onToggle={id => setConvenienceChecked(previous => ({ ...previous, [id]: !previous[id] }))}
+        onClose={() => setConvenienceOpen(false)} />}
 
       <footer>지도: OpenStreetMap · 경로는 계획 순서 점선 · 실제 철도/버스 시간은 출발 전 재확인</footer>
     </div>

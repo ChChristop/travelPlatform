@@ -1,8 +1,9 @@
 import React from 'react'
 import { typeOf, hasPos, fmt } from '../data/trip'
 import { IconGear, IconArrowRight, IconPen, IconWarning, IconMap } from './Icons'
+import { packingItemCount } from '../data/packingChecklist'
 
-export default function EventDetail({ event, currentId, onClear }) {
+export default function EventDetail({ event, currentId, onClear, packingChecked = {}, onOpenPacking }) {
   if (!event) {
     return (
       <section className="panel detailPanel">
@@ -42,6 +43,10 @@ export default function EventDetail({ event, currentId, onClear }) {
         {event.note && <p className="detailNote">{event.note}</p>}
 
         <div className="detailRows">
+          {event.id === 'trip-depart' && <button className="packingOpenBtn" onClick={onOpenPacking}>
+            <span className="packingOpenTitle">준비물 확인</span>
+            <span className="packingOpenMeta"><strong>{Object.values(packingChecked).filter(Boolean).length}/{packingItemCount} 체크</strong><i aria-hidden="true">›</i></span>
+          </button>}
           {event.prep && <Row label="준비" value={event.prep + (event.prepMinutes ? ` · ${event.prepMinutes}분 전` : '')} icon={<IconGear />} />}
           {event.transport && <Row label="이동" value={event.transport} icon={<IconArrowRight />} />}
           {event.reservation && <Row label="예약" value={event.reservation} icon={<IconPen />} />}

@@ -194,6 +194,66 @@ button{cursor:pointer}
 .currentScheduleBtn:hover{border-color:var(--accent);background:#e0e7ff}
 .currentScheduleBtn.isCurrent{border-color:#86efac;background:#dcfce7;color:#166534}
 .currentScheduleBtn.isCurrent:hover{border-color:#22c55e;background:#bbf7d0}
+.packingOpenBtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:8px 11px;border:1px solid #c7d2fe;border-radius:8px;background:#eef2ff;color:#3730a3;text-align:left;font-size:13px;font-weight:750}
+.packingOpenBtn:hover{background:#e0e7ff;border-color:#818cf8}
+.packingOpenTitle{line-height:1.3}
+.packingOpenMeta{display:flex;align-items:center;justify-content:space-between;width:100%;line-height:1.2}
+.packingOpenMeta strong{font-size:11px;color:#6366f1;white-space:nowrap}
+.packingOpenMeta i{font-style:normal;font-size:18px;line-height:12px;color:#6366f1}
+.packingOverlay{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:18px;background:rgba(15,23,42,.52);animation:fadeIn .15s}
+.packingModal{display:flex;flex-direction:column;width:min(620px,100%);max-height:min(88vh,900px);max-height:min(88dvh,900px);overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-md)}
+.packingHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line-2)}
+.packingHead h2{margin:0;font-size:17px;line-height:1.3}
+.packingHead p{margin:4px 0 0;color:var(--ink-3);font-size:12px}
+.packingClose{flex:0 0 auto;border:0;border-radius:8px;background:var(--line-2);padding:7px 10px;color:var(--ink-2);font-weight:700;font-size:12px}
+.packingProgress{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px;padding:10px 18px;border-bottom:1px solid var(--line-2);color:var(--ink-2);font-size:12px;font-weight:700}
+.packingProgress strong{color:var(--accent);font-variant-numeric:tabular-nums}
+.packingProgress i{grid-column:1/-1;height:5px;overflow:hidden;border-radius:9px;background:var(--line-2)}
+.packingProgress i b{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .15s}
+.packingGroups{overflow:auto;padding:6px 14px 16px;overscroll-behavior:contain}
+.packingGroup{padding:8px 0 5px}
+.packingGroup h3{margin:0;padding:5px 5px 7px;border-bottom:1px solid var(--line-2);color:var(--accent);font-size:13px;font-weight:800}
+.packingItem{display:flex;align-items:flex-start;gap:9px;padding:9px 6px;border-bottom:1px solid #f5f6f9;cursor:pointer}
+.packingItem input{position:absolute;width:1px;height:1px;opacity:0}
+.packingCheck{display:grid;place-items:center;flex:0 0 19px;width:19px;height:19px;margin-top:1px;border:1.7px solid #cbd5e1;border-radius:5px;color:#fff;font-size:12px;font-weight:800}
+.packingItem.checked .packingCheck{border-color:var(--accent);background:var(--accent)}
+.packingText{display:block;min-width:0;line-height:1.35}
+.packingText strong{display:block;font-size:13px;font-weight:650;color:var(--ink)}
+.packingText strong.important{font-weight:800}
+.packingText small{display:block;margin-top:2px;color:var(--ink-3);font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.packingItem.checked .packingText strong{color:var(--ink-3);text-decoration:line-through}
+.packingItem:focus-within .packingCheck{outline:3px solid #c7d2fe;outline-offset:2px}
+.convenienceOpenBtn{display:flex;align-items:center;gap:8px;margin:10px 12px 4px;padding:10px 11px;border:1px solid #c7d2fe;border-radius:9px;background:#eef2ff;color:#3730a3;text-align:left;font-size:13px;font-weight:750}
+.convenienceOpenBtn:hover{background:#e0e7ff;border-color:#818cf8}
+.convenienceOpenBtn strong{margin-left:auto;color:#6366f1;font-size:11px;white-space:nowrap}
+.convenienceOpenBtn i{font-style:normal;font-size:18px;line-height:12px}
+.convenienceOverlay{position:fixed;inset:0;z-index:220;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.58);animation:fadeIn .15s}
+.convenienceModal{display:flex;flex-direction:column;width:min(760px,100%);height:min(900px,100%);overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-md)}
+.convenienceHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line-2)}
+.convenienceHead h2{margin:0;font-size:17px;line-height:1.3}
+.convenienceHead p{margin:4px 0 0;color:var(--ink-3);font-size:12px}
+.convenienceProgress{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px;padding:10px 18px;border-bottom:1px solid var(--line-2);color:var(--ink-2);font-size:12px;font-weight:700}
+.convenienceProgress strong{color:var(--accent);font-variant-numeric:tabular-nums}
+.convenienceProgress i{grid-column:1/-1;height:5px;overflow:hidden;border-radius:9px;background:var(--line-2)}
+.convenienceProgress i b{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .15s}
+.convenienceList{overflow:auto;padding:6px 14px 16px;overscroll-behavior:contain}
+.convenienceItem{display:grid;grid-template-columns:23px minmax(0,1fr);align-items:start;gap:0 9px;padding:10px 7px;border-bottom:1px solid var(--line-2);border-radius:8px;cursor:pointer;transition:background .12s}
+.convenienceItem:hover{background:var(--line-2)}
+.convenienceItem input{position:absolute;width:1px;height:1px;opacity:0}
+.convenienceNumber{grid-column:1;grid-row:1;display:grid;place-items:center;width:21px;height:21px;margin:2px auto;border-radius:6px;background:var(--line-2);color:var(--ink-3);font-size:10px;font-weight:800;font-variant-numeric:tabular-nums}
+.convenienceContent{display:grid;grid-template-columns:minmax(78px,auto) minmax(0,1fr);align-items:baseline;gap:2px 10px;min-width:0}
+.convenienceContent{grid-column:2;grid-row:1}
+.convenienceStore{display:inline-flex;align-items:center;width:max-content;min-height:21px;padding:2px 8px;border:1px solid transparent;border-radius:999px;font-size:10.5px;font-weight:800;white-space:nowrap;letter-spacing:.01em}
+.convenienceStore.store-family{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.convenienceStore.store-seven{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.convenienceStore.store-lawson{background:#ecfeff;border-color:#a5f3fc;color:#0e7490}
+.convenienceStore.store-common{background:#f1f5f9;border-color:#cbd5e1;color:#475569}
+.convenienceContent strong{min-width:0;color:var(--ink);font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.convenienceContent small{grid-column:2;color:var(--ink-3);font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.convenienceItem.checked .convenienceContent strong{color:var(--ink-3);text-decoration:line-through}
+.convenienceItem.checked{background:#f0fdf4}
+.convenienceItem.checked .convenienceNumber{background:#16a34a;color:#fff}
+.convenienceItem:focus-within .convenienceNumber{outline:3px solid #c7d2fe;outline-offset:2px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 
@@ -266,4 +326,22 @@ footer{flex:0 0 auto;text-align:center;color:var(--ink-3);font-size:clamp(7px,2.
   .mapHead{padding:7px 12px}
   .grid{grid-template-rows:minmax(220px,0.9fr) minmax(260px,1.3fr);gap:8px}
   footer{padding:4px 8px}
+  .packingOverlay{place-items:end center;padding:8px}
+  .packingModal{width:100%;max-height:calc(100dvh - 16px);border-radius:14px}
+  .packingHead{padding:13px 14px 10px}
+  .packingHead h2{font-size:15px}
+  .packingProgress{padding:9px 14px}
+  .packingGroups{padding:4px 10px 12px}
+  .packingItem{padding:8px 5px;gap:8px}
+  .convenienceOverlay{place-items:stretch;padding:0}
+  .convenienceModal{width:100%;height:100%;height:100dvh;max-height:100dvh;border:0;border-radius:0}
+  .convenienceHead{padding:13px 14px 10px}
+  .convenienceHead h2{font-size:15px}
+  .convenienceProgress{padding:9px 14px}
+  .convenienceList{padding:3px 9px 12px}
+  .convenienceItem{grid-template-columns:22px minmax(0,1fr);gap:0 7px;padding:9px 4px}
+  .convenienceNumber{width:19px;height:19px}
+  .convenienceContent{grid-template-columns:1fr;gap:1px}
+  .convenienceContent strong{font-size:12.5px}
+  .convenienceContent small{grid-column:1;font-size:10.5px}
 }
