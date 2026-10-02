@@ -1,22 +1,22 @@
 # Local LLM Runner Guide — 축적된 운영 지식
 
-이 문서는 Codex(작업 세션)가 바뀌거나 토큰이 부족해 다른 에이전트로 전환되어도 동일한 실수를 반복하지 않도록, `docs/agent/local-runner.mjs` 운영 중 실제로 발생했던 문제와 그 해결책을 기록한다. **작업을 이어받는 에이전트는 이 문서를 CURRENT_TASK.md와 함께 먼저 읽는다.**
+이 문서는 주세션(작업 세션)이 바뀌거나 토큰이 부족해 다른 에이전트로 전환되어도 동일한 실수를 반복하지 않도록, `docs/agent/local-runner.mjs` 운영 중 실제로 발생했던 문제와 그 해결책을 기록한다. **작업을 이어받는 에이전트는 이 문서를 CURRENT_TASK.md와 함께 먼저 읽는다.**
 
 ## 1. 기본 구조
 
 - Local LLM endpoint: 실제 값은 저장소에 커밋하지 않는다 — `.env.local`(gitignored)의 `LOCAL_LLM_BASE_URL`에 두고, 형식은 `.env.example` 참고(OpenAI 호환, vLLM). 모델 ID는 매번 `/models`로 동적 조회(하드코딩 금지).
 - 실행: `node docs/agent/local-runner.mjs <batch> <session> [correctionPath]`
   - 예: `node docs/agent/local-runner.mjs R3 A`, `node docs/agent/local-runner.mjs R3 A docs/agent/sessions/R3-A-correction.md`
-- 배치(R1~R5)별 세션 소유권은 `OWNERSHIP` 객체에, 세션별 필수 검증은 `requiredForFinish`에 정의되어 있다. 새 배치를 시작할 때 이 두 곳과 `BATCH_EXTRA_COMMON`, `TEST_DIRS`를 함께 갱신해야 한다.
+- 배치(R1~R6): OWNERSHIP, requiredForFinish, BATCH_EXTRA_COMMON, TEST_DIRS 항목을 확인하여 소유권 범위를 명확히 합니다.
 - 검증 종류(`validate(kind)`): `scope`(tsc), `runtime`(`node --experimental-strip-types --test`), `build`(vite build), `migrationRun`(R3 전용, 실제 실행), `domain`/`docs`(R1 전용).
 - `docs/agent/invoke-audit.ps1`: 위와 다른, bounded action-loop이 아닌 "많이 읽고 보고서 하나 쓰기" 1-shot 패턴. `docs/agent/design-audit-runner.mjs`도 같은 패턴(설계 문서 vs 코드 대조용).
 
 ## 2. 반드시 지켜야 하는 핵심 원칙
 
-1. **토큰/역할 분담**: 대량 읽기·비교·초안 작성(구현, 테스트 작성, 문서 대조)은 로컬 LLM에 위임한다. Codex(이 세션)의 역할은 작업 분해(CURRENT_TASK 작성), 세션 실행, **결과를 직접 검증**(선언된 PASS를 그대로 믿지 않음), 필요시 정밀한 소규모 수정을 직접 하는 것이다. 수 줄짜리 정밀한 버그(타입 오류 한 줄, CSS import 한 줄 등)는 로컬 LLM에 다시 왕복시키지 않고 Codex가 직접 고치는 편이 더 낫다 — 왕복 비용과 로컬 모델의 실수 가능성을 고려.
+1. **토큰/역할 분담**: 모든 저장소 파일 변경(구현, 테스트, 문서, 설정, ad hoc 작업 포함)은 로컬 LLM이 기본 구현자이다. 주세션(이 세션)의 역할은 작업 분해(CURRENT_TASK 작성), 세션 실행, **결과를 직접 검증**(선언된 PASS를 그대로 믿지 않음)이다. 주세션은 승인 없이 계획, 읽기, 검토, 검증을 수행할 수 있으나, 저장소 파일을 직접 변경하려면 사용자의 명시적 사전 승인을 받아야 한다. 작업 완료 요청이나 단계 승인은 직접 편집 승인으로 간주되지 않으며, 실패나 반복 실수도 직접 편집 승인을 의미하지 않는다.
 2. **배치 게이트**: R-phase(R1→R2→...→R10)는 절대 자동으로 다음 단계에 진입하지 않는다. 매 배치 시작 전 사용자의 명시적 승인이 필요하다.
-3. **세션 종료 후 반드시 홀리스틱 재검증**: 새 세션이 "통과"를 선언해도, **이전에 완료된 모든 배치의 검증 명령을 전부 재실행**해서 회귀가 없는지 확인한다(§4의 명령 목록). 세션 자신의 검증은 자기 파일만 보기 때문에 배치 간 회귀를 못 잡는다(§3.7 참고).
-4. **배치 완료 → 다음 배치 착수 전 자동 커밋** (2026-09-23 사용자 지시, 이후 배치부터 계속 적용되는 표준 절차): 한 배치가 완료되고(§3의 홀리스틱 재검증까지 통과) HANDOFF.md/WORKLOG.md/CURRENT_TASK.md 갱신이 끝나면, 다음 배치를 시작하기 전에 **그 배치의 변경사항만으로 git commit을 만든다**(로컬 커밋, `git add` 대상은 리뷰 후 결정, 커밋 메시지는 그 배치 요약). 이 로컬 커밋은 매번 사용자 승인을 다시 받지 않고 진행한다(사용자가 이미 승인한 표준 절차). **단, `git push`는 별개다 — push는 매번 사용자에게 먼저 확인받는다**(공개 저장소로 실제로 나가는 액션이므로). 즉: 배치 경계마다 로컬 커밋은 자동, 원격 push는 항상 별도 확인.
+3. **타겟 변경 영향 검증**: 세션 종료 시 변경된 파일의 스냅샷/해시를 기준으로, 해당 경로에 영향을 미치는 검증만 선택적으로 실행한다. 동일 트리에서 최근 통과 증거가 있는 미변경 코드는 재검증하지 않으며, 이미 통과한 명령을 관련 편집 없이 반복 금지한다. 실패 시 실패한 타겟부터 재실행한다. 문서 전용 변경은 빌드/테스트 생략, JSX/CSS는 빌드 또는 시각 확인 1회, TS 로직은 관련 타입체크/테스트, 상태/영속성/통합은 영향받는 상/하류 테스트만 선택. 전체 스위트는 횡단적 변경, 릴리스/단계 종료 시 이전 커버리지 신뢰 불가, 또는 사용자 명시 요청 시에만 1회 실행한다.
+4. **배치 완료 → 다음 배치 착수 전 자동 커밋** (2026-09-23 사용자 지시, 이후 배치부터 계속 적용되는 표준 절차): 한 배치가 완료되고(§4의 변경 영향 검증까지 통과) HANDOFF.md/WORKLOG.md/CURRENT_TASK.md 갱신이 끝나면, 다음 배치를 시작하기 전에 **그 배치의 변경사항만으로 git commit을 만든다**(로컬 커밋, `git add` 대상은 리뷰 후 결정, 커밋 메시지는 그 배치 요약). 이 로컬 커밋은 매번 사용자 승인을 다시 받지 않고 진행한다(사용자가 이미 승인한 표준 절차). **단, `git push`는 별개다 — push는 매번 사용자에게 먼저 확인받는다**(공개 저장소로 실제로 나가는 액션이므로). 즉: 배치 경계마다 로컬 커밋은 자동, 원격 push는 항상 별도 확인.
 
 ## 3. 실제로 겪은 문제와 해결책 (연대순)
 
@@ -33,16 +33,16 @@ Node의 `--experimental-strip-types`로 런타임 테스트를 돌리려면 상�
 
 ### 3.4 사전 정의한 공유 계약이 불완전하면, 모델은 "계약대로 맞지만 결과물은 틀린" 산출물을 만든다 (R3)
 R3-A용으로 Codex가 미리 써준 `types.ts`의 `MigrationResult`에 실제 seed 엔티티 배열(Workspace/Project/PlanItem/Task/Booking)이 빠져 있었다. 모델은 그 불완전한 계약을 충실히 구현해서 provenance/report만 만들고 실제 migration 데이터를 전혀 생성하지 않았다 — **계약 자체가 틀렸던 것이지 모델의 잘못이 아니었다.** 게다가 노트에는 "Booking created"라고 적어놓고 실제 Booking 객체는 안 만드는 날조성 문제도 있었다.
-- **교훈**: Codex가 세션 시작 전에 미리 써주는 공유 타입 계약은 배치의 실제 산출물 요구사항(EXECUTION_SPEC의 "완료" 조건)을 빠짐없이 반영해야 한다. 세션이 끝난 뒤에는 **"계약을 지켰는지"뿐 아니라 "계약 자체가 완전했는지"도 재검토**한다.
+- **교훈**: 주세션이 세션 시작 전에 미리 써주는 공유 타입 계약은 배치의 실제 산출물 요구사항(EXECUTION_SPEC의 "완료" 조건)을 빠짐없이 반영해야 한다. 세션이 끝난 뒤에는 **"계약을 지켰는지"뿐 아니라 "계약 자체가 완전했는지"도 재검토**한다.
 - **교훈**: 코드가 "~했다"고 주장하는 note/log/handoff 문자열은 실제 데이터 구조(배열에 정말 그 항목이 들어있는지)와 반드시 대조해서 확인한다.
 
 ### 3.5 새 하위 폴더가 이전 배치의 넓은 tsconfig `include`에 걸려 회귀를 유발 (R3에서 발견, R4에서 사전 예방)
 `tsconfig.domain.json`의 `include`가 `src/domain/**/*.ts`였는데, R3에서 `src/domain/migrations/**`를 새로 추가하자 R1의 typecheck가 갑자기 실패했다(새 코드는 `@types/node` 없이 Node API를 쓰기 때문). `exclude`를 추가하고 `tsconfig.migrations.json`을 별도로 만들어 해결.
 - **교훈**: 새 배치에서 `src/domain/**`, `src/store/**` 등 **기존에 넓게 include된 경로 아래**에 새 폴더를 만들 때는, 만들기 전에 어떤 기존 tsconfig가 그 경로를 포함하는지 확인하고 처음부터 전용 tsconfig(`tsconfig.<batch-name>.json`)로 분리한다. R4는 이 교훈을 미리 적용해서 회귀 없이 지나갔다.
-- **표준 명령 목록**(§4)을 배치 완료 시마다 전부 재실행하는 습관이 이 문제를 잡아낸다.
+- 기존 무조건적 전체 명령 재실행 대신 직접 영향받는 upstream/downstream 체크만 선택적으로 실행
 
 ### 3.6 `local-runner.mjs`의 자동 검증 블록이 예외를 못 잡아 프로세스 전체가 죽음 (R4)
-"쓰기 후 명시적 validate 액션이 없으면 자동으로 필수 kind를 검증"하는 블록이 `await validate(kind)`를 try/catch 없이 호출했다. 세션이 구현 파일만 쓰고 테스트 파일은 아직 안 쓴 시점에 자동으로 `runtime` 검증이 돌면 `validate()`가 "테스트 파일 없음" 에러를 던지고, 이게 잡히지 않아 러너 프로세스 전체가 죽었다(모델에게 실패로 보고되지 않고 그냥 크래시). **이미 수정됨** — 두 자동 검증 호출 모두 try/catch로 감싸서 실패를 `{op:'validate', kind, error}` 형태로 정상 보고하도록 고쳤다.
+"쓰기 후 명시적 validate 액션이 없으면 자동으로 필수 kind를 검증"하는 블록이 `await validate(kind)`를 try/catch 없이 호출했다. 세션이 구현 파일만 쓰고 테스트 파일은 아직 안 쓴 시점에 자동으로 `runtime` 검증이 돌면 `validate()`가 "테스트 파일 없음" 에러를 던지고, 이게 잡히지 않아 러너 프로세스 전체가 죽었다(모델에게 실패로 보고되지 않고 그냥 크래시). **이미 수정됨** — 두 자동 검증 호출 모두 try/catch로 감싸서 실패를 `{op:'validate', kind, error}` 형태로 정상 보고하도록 고쳤다. 현재는 파일 쓰기마다 자동 검증을 수행하지 않으며, 최종 편집이 완료된 후에만 검증을 실행합니다.
 
 ### 3.7 세션별 `scope`/`runtime` 통과가 배치 간 통합 버그를 못 잡음 (R2)
 R2-A2가 `ValueRuleInput.moneyValues`를 필수로 선언했는데 `StateFactoryInput.moneyValues`는 optional이었다 — A2 자신의 scope 체크는 내부적으로 일관되게 처리해서 통과했지만, R2-B의 테스트가 `validateValueRules`를 직접 호출하면서 실제 타입 불일치가 드러났다(node:test는 타입을 검사하지 않으므로 런타임에서는 우연히 통과). Codex가 배치 전체에 대해 별도로 `tsc -p tsconfig.runtime.json`을 직접 돌려봐서야 발견했다.
@@ -64,17 +64,20 @@ R5-A는 B/C 완료 후 "통합" 목적으로 correctionPath 없이 fresh 세션�
 ### 3.11 외부 라이브러리는 배치마다 CSS를 다시 import해야 할 수 있다 (R5)
 Leaflet은 자체 CSS(`leaflet/dist/leaflet.css`)가 없으면 지도가 빈 화면으로 렌더링된다(타일도 마커도 안 보임). 기존 앱(`src/main.jsx`)은 이미 import하고 있었지만, 완전히 격리된 새 entry(`src/platform/main.jsx`)는 그 import를 상속받지 않는다 — R5-C가 이걸 빠뜨렸다. 새 entry/모듈에서 외부 UI 라이브러리(지도, 차트 등)를 쓸 때는 그 라이브러리의 CSS를 그 entry 안에서 별도로 import해야 한다는 걸 체크리스트에 넣는다.
 
-## 4. 배치 완료 시 반드시 재실행할 명령 (2026-09-23 기준)
+## 4. 변경 경로별 타겟 검증 및 증거 기록
 
-```
-npm run typecheck:domain                 # R1
-npm run typecheck:migrations             # R3
-npx tsc -p tsconfig.runtime.json         # R2 (전용 npm script 없음, 직접 -p로 실행)
-npm run typecheck:selectors-persistence  # R4
-node --experimental-strip-types --test tests/domain/runtime/*.test.ts tests/migrations/*.test.ts tests/selectors/*.test.ts tests/persistence/*.test.ts tests/platform/*.test.ts
-npm run build                            # vite build, 기존+새 entry 모두 포함
-```
-새 배치를 시작하면 이 목록에 그 배치의 명령을 추가한다(예: R5는 별도 tsc 스크립트 없음 — `.jsx`라 타입 검사 대상이 아니고 `build`로만 검증됨).
+검증은 변경된 코드와 의존성 영향도에 기반하여 선택적으로 수행하며, 이미 통과한 미변경 스냅샷은 재실행하지 않는다. 실행 결과는 변경 파일, 소스/테스트 해시 또는 커밋, 명령/종료 코드, 재사용/건너뜀 이유를 포함하여 기록한다. 실패 시 수정 후 해당 타겟만 재실행하며, 전체 스위트는 횡단적 변경이나 신뢰할 수 있는 커버리지가 없을 때만 1회 실행한다.
+
+- `docs/**/*.md` 및 루트 Markdown 등 문서만 변경한 경우 정적 검토, 빌드/테스트 생략
+- `docs/agent/local-runner.mjs` 변경 시 `node --check docs/agent/local-runner.mjs`만 수행, 실제 테스트/빌드 반복 금지
+- **도메인 타입 (`src/domain/**`, 마이그레이션 제외)**: `npm run typecheck:domain`
+- **검증/상태 (`src/domain/validation/**`, `src/store/entities/**`)**: `npx tsc -p tsconfig.runtime.json`, `node --experimental-strip-types --test tests/domain/runtime/*.test.ts`
+- **마이그레이션 (`src/domain/migrations/**`)**: `npm run typecheck:migrations`, `node --experimental-strip-types --test tests/migrations/*.test.ts`
+- **셀렉터/영속성 (`src/store/selectors/**`, `src/persistence/**`)**: `npm run typecheck:selectors-persistence`, 관련 타겟 테스트 실행
+- **명령 (`src/store/commands/**`)**: Strict scope typecheck, `node --experimental-strip-types --test tests/commands/*.test.ts`
+- **플랫폼 (`src/platform/**`)**: JSX/CSS 변경 시 `npm run build` 1회 실행, 자동 전체 플랫폼 테스트 금지. 접근 가능한 UI 변경 시 브라우저 시각 확인 수행
+- **데이터 소스 (`src/platform/dataSource.js`)**: `node --experimental-strip-types --test tests/platform/r6-dataSource.test.ts`, 번들 코드 변경 시 build 추가
+- **뷰 순수 헬퍼**: 해당 테스트 파일만 실행
 
 ## 5. 배치별 아키텍처 요약 (자세한 내용은 HANDOFF.md/WORKLOG.md 참고)
 

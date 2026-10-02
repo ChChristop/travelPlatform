@@ -1,8 +1,10 @@
-# Agent Workflow — Local Qwen Implementation + Codex Supervision
+# Agent Workflow — Local Qwen 구현 + 주세션 감독
 
-> 목표: Local Qwen3.8-27B를 실제 구현 작업에 최대한 활용하고, Codex는 작업 분해·지시·Diff 검증·테스트 검증에 집중하여 Codex 토큰 사용량을 줄인다.
+> 목표: Local LLM이 조사, 코딩, 버그 수정, 테스트, 문서, 설정 및 임시 작업 등 모든 리포지토리 작업을 기본으로 실행한다. 주세션은 계획, 조정, 검토 및 검증에 집중하여 토큰 사용량을 최소화한다.
 
-> **세션/에이전트가 바뀌어도 반드시 먼저 읽을 문서**: [docs/agent/RUNNER_GUIDE.md](docs/agent/RUNNER_GUIDE.md) — local-runner.mjs 사용법, 실제로 겪은 문제와 해결책, 배치 완료마다 재실행해야 하는 검증 명령 전체 목록. 여기(AGENT_WORKFLOW.md)에 없는 운영 디테일은 그 문서에 있다.
+주세션(Master/Coordinating Session)은 Codex, Claude 등 상위 모델 기반 세션을 지칭하며, 리포지토리 작업의 계획 수립, Local LLM에 대한 작업 위임, 그리고 결과물의 검토 및 검증 책임을 가진다. 주세션은 기본적으로 저장소 파일을 직접 수정하지 않으며, 모든 실제 구현 및 파일 변경 작업은 Local LLM이 기본 실행자로 수행한다. 주세션이 저장소 파일을 직접 편집하려면 해당 편집의 정확한 범위에 대해 사용자의 명시적 사전 승인을 반드시 받아야 하며, 일반적인 작업 승인이나 단계 승인만으로는 직접 편집 권한이 부여되지 않는다.
+
+[docs/agent/RUNNER_GUIDE.md](docs/agent/RUNNER_GUIDE.md)의 가이드에 따라 선택적 검증 워크플로우를 적용합니다.
 
 ---
 
@@ -30,11 +32,11 @@ Primary Implementer
 - 작업 로그 작성
 - Git diff 정리
 
-가능하면 대부분의 파일 수정은 Local Agent가 수행한다.
+모든 파일 수정은 기본적으로 Local LLM이 수행한다.
 
 ---
 
-## Codex
+## 주세션
 
 기본 역할:
 
@@ -57,16 +59,17 @@ Escalation Agent
 - 오류 원인 판단
 - 다음 작업 지시 생성
 
-기본적으로 Codex가 직접 대량 구현하지 않는다.
+기본적으로 주세션은 저장소 파일 변경을 직접 수행하지 않는다. 모든 저장소 파일 변경(소형 수정, 테스트, 문서, 설정, ad hoc 작업 포함)은 Local LLM이 기본 구현자이다.
 
-다음 경우에만 직접 수정 고려:
+주세션은 승인 없이 계획, 읽기, 검토, 검증을 수행할 수 있다. 그러나 주세션이 저장소 파일을 직접 변경하려면, 해당 직접 편집 범위에 대해 사용자의 명시적 사전 승인을 받아야 한다.
 
-- Local Agent가 같은 오류를 반복
-- 구조적 버그
-- 복잡한 migration
-- concurrency/state bug
-- difficult TypeScript inference
-- 배포를 막는 blocking issue
+작업 완료 요청이나 단계 승인은 직접 편집 승인으로 간주되지 않는다.
+
+실패, 가용성 문제, 반복 실수는 직접 편집 승인을 의미하지 않는다. 사용자에게 확인해야 한다.
+
+Ad hoc 작업은 Local LLM에 제한된 범위로 배정해야 한다.
+
+주세션의 과거 직접 편집 사례는 역사적 기록일 뿐, 현재 예외가 아니다.
 
 ---
 
@@ -149,7 +152,7 @@ OpenCode가 이미 설치되어 있으므로 Local Qwen 작업 runner로 사용�
 - 반복 작업
 - Git diff 기반 작업
 - Local/OpenAI-compatible endpoint 연결
-- Codex와 역할 분리가 쉬움
+- 주세션과 역할 분리가 쉬움
 
 단, 특정 OpenCode 버전의 config schema는 설치 버전에 따라 달라질 수 있으므로 임의의 설정 문법을 하드코딩하지 않는다.
 
@@ -214,7 +217,7 @@ docs/
 
 # 6. CURRENT_TASK.md
 
-Codex가 각 작업 전에 Local Agent에게 줄 지시를 작성한다.
+주세션이 각 작업 전에 Local Agent에게 줄 지시를 작성한다.
 
 권장 형식:
 
@@ -256,9 +259,9 @@ Local Agent는 **CURRENT_TASK.md 범위 밖 변경을 최소화**한다.
 
 # 7. HANDOFF.md
 
-Local Agent가 작업 완료 후 Codex에게 전달하는 짧은 보고서.
+Local Agent가 작업 완료 후 주세션에게 전달하는 짧은 보고서.
 
-Codex 토큰 절약을 위해 반드시 간결하게 유지한다.
+주세션 토큰 절약을 위해 반드시 간결하게 유지한다.
 
 예:
 
@@ -300,13 +303,13 @@ PASS / PARTIAL / FAIL
 Phase 3 legacy migration adapter.
 ```
 
-Codex는 우선 이 문서만 읽는다.
+주세션은 우선 이 문서만 읽는다.
 
 ---
 
 # 8. WORKLOG.md
 
-Local Agent의 장황한 작업 과정은 Codex에게 매번 전달하지 않는다.
+Local Agent의 장황한 작업 과정은 주세션에게 매번 전달하지 않는다.
 
 필요한 경우에만 `WORKLOG.md`에 기록한다.
 
@@ -319,13 +322,13 @@ Local Agent의 장황한 작업 과정은 Codex에게 매번 전달하지 않는
 추후 cleanup
 ```
 
-Codex는 문제가 있을 때만 읽는다.
+주세션은 문제가 있을 때만 읽는다.
 
 ---
 
 # Parallel Task Coordination
 
-병렬 세션을 사용할 경우 Codex는 CURRENT_TASK.md에 다음을 명시한다.
+병렬 세션을 사용할 경우 주세션은 CURRENT_TASK.md에 다음을 명시한다.
 
 - Session ID
 - 담당 Subtask
@@ -353,14 +356,14 @@ Session C
 
 서로 같은 파일을 수정하지 않는다.
 
-병렬 작업 완료 후 Codex가 HANDOFF와 diff를 통합 검토한다.
+병렬 작업 완료 후 주세션이 HANDOFF와 diff를 통합 검토한다.
 
-# 9. Token-Minimized Codex Review Flow
+# 9. Token-Minimized 주세션 Review Flow
 
 기본 Loop:
 
 ```text
-Codex
+주세션
   ↓
 CURRENT_TASK.md 작성
 
@@ -372,7 +375,7 @@ build/lint/test
   ↓
 HANDOFF.md
 
-Codex
+주세션
   ↓
 HANDOFF 확인
   ↓
@@ -387,11 +390,11 @@ PASS
 다음 CURRENT_TASK
 ```
 
-Codex가 매 Phase마다 Repository 전체를 재분석하지 않는다.
+주세션이 매 Phase마다 Repository 전체를 재분석하지 않는다.
 
 ---
 
-# 10. Codex가 먼저 볼 정보 순서
+# 10. 주세션이 먼저 볼 정보 순서
 
 Token 절약을 위해 아래 순서를 따른다.
 
@@ -426,7 +429,7 @@ git diff -- src/store/...
 
 # 11. Local Agent Prompt Template
 
-Codex가 Local Agent에게 전달할 기본 Prompt:
+주세션이 Local Agent에게 전달할 기본 Prompt:
 
 ```text
 Read these files first:
@@ -443,16 +446,16 @@ Important:
 - Do not replace existing components merely to simplify implementation.
 - Follow the domain invariants.
 - Prefer adapters/selectors over UI rewrites.
-- Run all validation commands specified in CURRENT_TASK.md.
+- 변경된 파일 경로에 해당하는 타겟 검증 명령만 실행하고, 미변경 코드는 최근 통과 증거를 재사용한다.
 - Update docs/agent/HANDOFF.md after completion.
 - Do not begin the next phase.
 ```
 
 ---
 
-# 12. Codex Review Prompt Template
+# 12. 주세션 Review Prompt Template
 
-Codex 검증용:
+주세션 검증용:
 
 ```text
 Review the implementation for the current phase.
@@ -494,13 +497,13 @@ Attempt 1
 → Local Qwen fix
 
 Attempt 2
-→ Local Qwen fix with Codex hint
+→ Local Qwen fix with 주세션 hint
 
 Attempt 3
-→ Codex analyzes root cause
+→ 주세션 analyzes root cause
 ```
 
-3회 이상 동일 실패가 발생하면 Codex가 직접 구조를 판단한다.
+3회 이상 동일 실패가 발생하면 주세션이 원인을 분석하고 Local LLM에 정정 지시를 내린다. 주세션이 직접 파일을 수정하려면 사용자의 명시적 사전 승인을 받아야 한다.
 
 ---
 
@@ -570,7 +573,7 @@ Facade
 
 # 16. Domain Invariant Review Checklist
 
-Codex는 Phase review 시 다음을 확인한다.
+주세션은 Phase review 시 다음을 확인한다.
 
 - PlanItem이 의미 단위로 유지되는가?
 - 날짜별 View 때문에 Entity를 복제하지 않았는가?
@@ -587,7 +590,7 @@ Codex는 Phase review 시 다음을 확인한다.
 
 # 17. Phase별 Agent 역할
 
-| Phase         | Local Qwen  | Codex                   |
+| Phase         | Local Qwen  | 주세션                   |
 | ------------- | ----------- | ----------------------- |
 | Repo Audit    | 분석/문서화 | 결과 검증               |
 | Domain Types  | 구현        | 타입/관계 검증          |
@@ -626,9 +629,9 @@ mock data
 
 ---
 
-# 19. Codex에 남길 작업
+# 19. 주세션에 남길 작업
 
-가능하면 Codex는 다음에 집중한다.
+가능하면 주세션은 다음에 집중한다.
 
 ```text
 architecture
@@ -647,9 +650,9 @@ review
 
 # 20. Repository Context 최소화 전략
 
-Local Agent는 Repository 전체를 읽어도 되지만 Codex는 단계별로 최소 context만 받는다.
+Local Agent는 Repository 전체를 읽어도 되지만 주세션은 단계별로 최소 context만 받는다.
 
-Codex가 매번 알아야 하는 것은:
+주세션이 매번 알아야 하는 것은:
 
 ```text
 현재 Phase
@@ -668,7 +671,7 @@ Codex가 매번 알아야 하는 것은:
 # 21. 권장 실제 Workflow
 
 ```text
-1. Codex:
+1. 주세션:
    CURRENT_TASK.md 작성
 
 2. OpenCode + Local Qwen:
@@ -678,7 +681,7 @@ Codex가 매번 알아야 하는 것은:
    build/lint/test
    HANDOFF.md 갱신
 
-4. Codex:
+4. 주세션:
    HANDOFF + diff 검토
 
 5. 실패:
@@ -710,7 +713,7 @@ Phase 0 — Repository Audit
 docs/agent/CURRENT_ARCHITECTURE.md
 ```
 
-그 다음 Codex가 이를 검토하고 Phase 1을 지시한다.
+그 다음 주세션이 이를 검토하고 Phase 1을 지시한다.
 
 ---
 
@@ -718,13 +721,13 @@ docs/agent/CURRENT_ARCHITECTURE.md
 
 ```text
 Local Qwen = 손
-Codex      = 설계/감독/검증
+주세션      = 설계/감독/검증
 Git        = 안전장치
 Tests      = 객관적 판정
 Docs       = Agent 간 기억
 ```
 
-Codex가 구현 내용을 매번 처음부터 다시 이해하지 않게 만드는 것이 토큰 절약의 핵심이다.
+주세션이 구현 내용을 매번 처음부터 다시 이해하지 않게 만드는 것이 토큰 절약의 핵심이다.
 
 따라서:
 

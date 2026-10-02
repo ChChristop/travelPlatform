@@ -9,6 +9,7 @@ import EventDetail from './components/EventDetail'
 import TodoList from './components/TodoList'
 import PackingChecklistModal from './components/PackingChecklistModal'
 import ConvenienceListModal from './components/ConvenienceListModal'
+import { nextTrackingMode, trackingFocus } from './mapTracking'
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
@@ -40,18 +41,26 @@ function plannedPosition(now) {
   return one ? { lat: one.lat, lng: one.lng, label: one.title } : null
 }
 
-function useMap(selected, now, gps) {
+function useMap(selected, now) {
   const el = useRef(null), mapRef = useRef(null), layerRef = useRef(null), focusRef = useRef(null)
-  const [follow, setFollow] = useState(true)
+  const gpsRequestRef = useRef(0)
+  const [trackingMode, setTrackingMode] = useState('schedule')
+  const [gps, setGps] = useState(null)
+  const [gpsError, setGpsError] = useState('')
   useEffect(() => {
     if (!el.current || mapRef.current) return
-    const initialPosition = follow ? plannedPosition(now) : null
+    const initialPosition = plannedPosition(now)
     const initialCenter = initialPosition ? [initialPosition.lat, initialPosition.lng] : [35.02, 135.55]
     const initialZoom = initialPosition ? 12 : 9
     const map = L.map(el.current, { zoomControl: true, zoomSnap: 0 }).setView(initialCenter, initialZoom)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap contributors' }).addTo(map)
-    map.on('dragstart', () => setFollow(false))
-    map.on('zoomstart', e => { if (e.originalEvent) setFollow(false) })
+    const stopTracking = () => {
+      gpsRequestRef.current += 1
+      focusRef.current = null
+      setTrackingMode(mode => nextTrackingMode(mode, 'manual'))
+    }
+    map.on('dragstart', stopTracking)
+    map.on('zoomstart', e => { if (e.originalEvent) stopTracking() })
     mapRef.current = map
     layerRef.current = L.layerGroup().addTo(map)
     setTimeout(() => map.invalidateSize(), 100)
@@ -78,13 +87,31 @@ function useMap(selected, now, gps) {
         radius: 8, color: '#fff', weight: 3, fillColor: '#e11d48', fillOpacity: 1,
       }).bindTooltip(`예정 위치: ${pp.label}`).addTo(layer).bringToFront()
     }
-    if (gps) L.circleMarker([gps.lat, gps.lng], { radius: 8, weight: 3, fillOpacity: .8 }).bindTooltip('실제 GPS 위치').addTo(layer)
-    const focus = pp ? [pp.lat, pp.lng] : null
-    const key = focus ? focus.join(',') : null
-    if (follow && key && key !== focusRef.current) { focusRef.current = key; map.panTo(focus, { animate: true }) }
-  }, [selected, now, gps, follow])
-  useEffect(() => { focusRef.current = null }, [follow])
-  return { el, follow, setFollow }
+    if (trackingMode === 'gps' && gps) L.circleMarker([gps.lat, gps.lng], { radius: 8, weight: 3, fillOpacity: .8 }).bindTooltip('실제 GPS 위치').addTo(layer)
+    const focus = trackingFocus(trackingMode, pp, gps)
+    const key = focus ? `${trackingMode}:${focus.join(',')}` : null
+    if (key && key !== focusRef.current) { focusRef.current = key; map.panTo(focus, { animate: true }) }
+  }, [selected, now, gps, trackingMode])
+  const toggleFollow = () => {
+    gpsRequestRef.current += 1
+    focusRef.current = null
+    setGpsError('')
+    setTrackingMode(mode => nextTrackingMode(mode, 'follow'))
+  }
+  const askGps = () => {
+    if (!navigator.geolocation) { setGpsError('이 브라우저는 GPS를 지원하지 않습니다.'); return }
+    const request = ++gpsRequestRef.current
+    setGpsError('')
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        if (request !== gpsRequestRef.current) return
+        setGps({ lat: position.coords.latitude, lng: position.coords.longitude, accuracy: position.coords.accuracy })
+        setTrackingMode(mode => nextTrackingMode(mode, 'gps'))
+      },
+      error => { if (request === gpsRequestRef.current) setGpsError(error.message) },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 })
+  }
+  return { el, trackingMode, gps, gpsError, askGps, toggleFollow }
 }
 
 export default function App() {
@@ -95,8 +122,6 @@ export default function App() {
   const [speed, setSpeed] = useState(300)
   const [selected, setSelected] = useState(null)
   const [timelineFocus, setTimelineFocus] = useState({ id: null, version: 0 })
-  const [gps, setGps] = useState(null)
-  const [gpsError, setGpsError] = useState('')
   const lastFollowState = useRef({ enabled: true, currentId: null })
   const [done, setDone] = useState(() => JSON.parse(localStorage.getItem('trip.todo.done') || '{}'))
   const [packingChecked, setPackingChecked] = useState(() => {
@@ -114,7 +139,8 @@ export default function App() {
   const activeTime = mode === 'live' ? now : simTime
   const activeTs = activeTime.getTime()
   const state = useMemo(() => findState(activeTime), [activeTs])
-  const { el: mapEl, follow, setFollow } = useMap(selected || state.current || state.next, activeTime, gps)
+  const { el: mapEl, trackingMode, gps, gpsError, askGps, toggleFollow } = useMap(selected || state.current || state.next, activeTime)
+  const follow = trackingMode === 'schedule'
 
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(id) }, [])
   useEffect(() => { if (mode !== 'sim' || !playing) return; const id = setInterval(() => setSimTime(t => { const base = Number.isFinite(t.getTime()) ? t.getTime() : ms(tripMeta.start); return new Date(Math.min(ms(tripMeta.end), base + speed * 1000)) }), 1000); return () => clearInterval(id) }, [mode, playing, speed])
@@ -128,13 +154,6 @@ export default function App() {
     lastFollowState.current = { enabled: follow, currentId: state.current?.id ?? null }
   }, [follow, state.current?.id])
 
-  const askGps = () => {
-    if (!navigator.geolocation) { setGpsError('이 브라우저는 GPS를 지원하지 않습니다.'); return }
-    navigator.geolocation.getCurrentPosition(
-      p => { setGps({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy }); setGpsError('') },
-      e => setGpsError(e.message),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 })
-  }
   const upcoming = state.next
   const minsToUpcoming = upcoming ? Math.round((ms(upcoming.start) - activeTime.getTime()) / 60000) : null
   const detailEvent = selected || state.current || upcoming
@@ -160,7 +179,7 @@ export default function App() {
           <EventDetail event={detailEvent} currentId={state.current?.id} onClear={showCurrentSchedule}
             packingChecked={packingChecked} onOpenPacking={() => setPackingOpen(true)} />
         </div>
-        <MapPanel mapEl={mapEl} follow={follow} setFollow={setFollow} gps={gps} gpsError={gpsError} askGps={askGps} />
+        <MapPanel mapEl={mapEl} trackingMode={trackingMode} toggleFollow={toggleFollow} gps={gps} gpsError={gpsError} askGps={askGps} />
       </main>
 
       {menuOpen && (

@@ -10,7 +10,7 @@
 - 보존: src/App.jsx, src/components/**, src/data/trip.js, src/main.jsx, src/styles.css 및 현재 진입점. R1에서 앱 import/build 설정을 바꾸지 않는다.
 - 추가: src/domain/**의 타입과 독립 타입 검증. 후속 store/migration/UI는 단계별 별도 경로.
 - 공존: 향후 platform/index.html과 src/platform/** 같은 별도 진입점을 계획한다. /platform/은 제안 경로이며 현재 구현된 Route가 아니다. GitHub Pages의 repository base 및 직접 진입/새로고침을 검증한다.
-- 전환: 신규 화면을 기본으로 바꾸더라도 이전 진입점과 저장 데이터를 삭제하지 않는다. **기존 앱 삭제·폐기는 추후 사용자에게 명시적인 확인을 받은 뒤에만 진행한다.** 새 앱 검증 완료, 기본 entry 변경, Codex PASS는 폐기 승인이 아니다.
+- 전환: 신규 화면을 기본으로 바꾸더라도 이전 진입점과 저장 데이터를 삭제하지 않는다. **기존 앱 삭제·폐기는 추후 사용자에게 명시적인 확인을 받은 뒤에만 진행한다.** 새 앱 검증 완료, 기본 entry 변경, 주세션 PASS는 폐기 승인이 아니다.
 - 배포/commit/push는 현재 batch에 포함되지 않는다.
 
 ## 2. 데이터의 단일 기준
@@ -26,7 +26,7 @@
 
 R0 감사 → R1 타입 → R2 정규화/무결성 → R3 migration → R4 Selector/저장 → R5 새 앱 → R6 업무 기능/대안 변경 → R7 SIM → R8 LIVE → R9 전환 검증 → R10 공유 경계.
 
-아래 경로는 R1 이외에는 **예정 경로**다. 실제 착수 시 CURRENT_TASK에서 세부 파일과 검증 명령을 고정한다. 각 batch는 Qwen handoff와 실행 로그를 Codex가 검토하고 PASS 또는 corrective task를 남긴다. 검증 실패 상태로 다음 단계에 진입하지 않는다.
+아래 경로는 R1 이외에는 **예정 경로**다. 실제 착수 시 CURRENT_TASK에서 세부 파일과 검증 명령을 고정한다. 각 batch는 Qwen handoff와 실행 로그를 주세션이 검토하고 PASS 또는 corrective task를 남긴다. 검증 실패 상태로 다음 단계에 진입하지 않는다.
 
 ### R0 — 감사 (완료)
 
@@ -132,7 +132,7 @@ R0 감사 → R1 타입 → R2 정규화/무결성 → R3 migration → R4 Selec
 
 가벼운 독립 작업 최대 4세션, 중간 2~3세션, Store/Migration/Simulation/LIVE 같은 무거운 작업 최대 2세션.
 각 CURRENT_TASK에 세션 ID, subtask, 쓰기 허용/금지 파일, read 의존성, 완료 조건, validation 명령을 고정한다. 공통 파일 수정은 단일 owner 또는 dependency 완료 후 순차 통합으로 처리한다.
-Qwen이 구현/테스트/검증/세션 HANDOFF를 작성하고 Codex가 작업 분해/architecture/diff review/gate를 담당한다. 실제 실행 결과는 runner log로 확인한다. 선언된 PASS만 믿지 않는다. 반복 실패는 작은 corrective task 후 Codex가 원인을 판단한다.
+Qwen이 구현/테스트/검증/세션 HANDOFF를 작성하고 주세션이 작업 분해/architecture/diff review/gate를 담당한다. 실제 실행 결과는 runner log로 확인한다. 선언된 PASS만 믿지 않는다. 반복 실패는 작은 corrective task 후 주세션이 원인을 판단한다.
 
 ## 6. 이번 batch의 범위와 명령
 

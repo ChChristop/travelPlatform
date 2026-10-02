@@ -636,10 +636,10 @@ Share / Fork Ready
 ## Agent Workflow
 
 ```text
-docs/AGENT_WORKFLOW.md
+AGENT_WORKFLOW.md
 ```
 
-Local LLM과 Codex의 역할 분담 기준.
+Local LLM과 주세션(Codex, Claude 등)의 역할 분담 기준
 
 기본 역할:
 
@@ -647,7 +647,7 @@ Local LLM과 Codex의 역할 분담 기준.
 Local Qwen3.8-27B
 → Primary Implementer
 
-Codex
+주세션
 → Planner / Reviewer / Verifier
 ```
 
@@ -674,7 +674,7 @@ OpenCode를 Local Agent Runner로 사용하는 것을 권장합니다.
 권장 흐름:
 
 ```text
-Codex
+주세션
 ↓
 CURRENT_TASK.md
 
@@ -690,15 +690,15 @@ Local Qwen
 ↓
 HANDOFF.md
 
-Codex
+주세션
 ↓
 HANDOFF 검토
 
-Codex
+주세션
 ↓
 git diff --stat
 
-Codex
+주세션
 ↓
 핵심 Diff만 검증
 
@@ -707,7 +707,7 @@ PASS
 다음 Phase
 ```
 
-Codex가 매 작업마다 전체 Repository를 다시 읽지 않도록 합니다.
+주세션이 매 작업마다 전체 Repository를 다시 읽지 않도록 합니다.
 
 ---
 

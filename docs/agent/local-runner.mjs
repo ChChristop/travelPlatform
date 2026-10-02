@@ -38,6 +38,11 @@ const OWNERSHIP = {
     B: ['src/platform/features/timeline/TimelineView.jsx','src/platform/features/timeline/TimelineView.css','tests/platform/timeline-helpers.test.ts'],
     C: ['src/platform/features/map/MapView.jsx','src/platform/features/map/MapView.css','src/platform/features/map/mapHelpers.js','tests/platform/map-helpers.test.ts'],
   },
+  R6: {
+    A: ['src/store/commands/option.ts','src/store/commands/booking.ts','src/store/commands/cost.ts','src/store/commands/task.ts','src/store/commands/index.ts','tests/commands/option.test.ts','tests/commands/booking-cost-task.test.ts'],
+    B: ['src/platform/features/booking/BookingView.jsx','src/platform/features/booking/BookingView.css','src/platform/features/cost/CostView.jsx','src/platform/features/cost/CostView.css','src/platform/features/tasks/TasksView.jsx','src/platform/features/tasks/TasksView.css','src/platform/features/plans/PlansView.jsx','src/platform/features/plans/PlansView.css'],
+    C: ['src/platform/PlatformApp.jsx','src/platform/Shell.jsx','src/platform/platform.css','src/platform/dataSource.js','src/platform/features/timeline/TimelineView.jsx','src/platform/features/map/MapView.jsx','src/platform/types.js','tests/platform/r6-dataSource.test.ts'],
+  },
 };
 const BATCH_EXTRA_COMMON = {
   R1: [],
@@ -45,12 +50,14 @@ const BATCH_EXTRA_COMMON = {
   R3: ['src/domain/migrations/types.ts','docs/EXECUTION_SPEC.md','src/data/trip.js'],
   R4: ['docs/EXECUTION_SPEC.md'],
   R5: ['docs/EXECUTION_SPEC.md','src/data/trip.js'],
+  R6: ['src/domain/booking.ts','src/domain/booking-policy.ts','src/domain/cost.ts','src/domain/task.ts','src/domain/alternatives.ts','src/domain/plan.ts','src/store/entities/state.ts','src/persistence/storage.ts','src/platform/PlatformApp.jsx','src/platform/Shell.jsx','src/platform/platform.css','src/platform/dataSource.js','src/platform/types.js'],
 };
 const TEST_DIRS = {
   R2: 'tests/domain/runtime',
   R3: 'tests/migrations',
   R4: { A: 'tests/selectors', B: 'tests/persistence' },
   R5: 'tests/platform',
+  R6: { A: 'tests/commands', C: 'tests/platform' },
 };
 if (!OWNERSHIP[batch]) throw new Error(`Batch must be one of: ${Object.keys(OWNERSHIP).join(', ')}`);
 const ownership = OWNERSHIP[batch];
@@ -108,7 +115,16 @@ const findRuntimeTestFiles = async () => {
 const validations=[];
 const consecutiveFailures = new Map();
 let repeatedFailure = false;
+let contentRevision = 0;
+const validationCache = new Map();
 async function validate(kind) {
+  const cacheKey = `${kind}:${contentRevision}`;
+  const cached = validationCache.get(cacheKey);
+  if (cached) {
+    const result = { ...cached, reused: true };
+    validations.push({kind, revision: contentRevision, ...result, reused: true}); await log({validation:kind, revision:contentRevision, ...result, reused:true});
+    return result;
+  }
   let result;
   if (batch === 'R1') {
     if(kind==='scope' && ['A','B'].includes(session)) {
@@ -124,7 +140,7 @@ async function validate(kind) {
       const sizes=await Promise.all(ownership.C.map(async p=>({path:p,characters:(await read(p)).length})));
       result={exitCode:sizes.every(x=>x.characters>100)?0:1,output:JSON.stringify(sizes)};
     } else throw new Error('Check not permitted for this session.');
-  } else if (batch === 'R2' || batch === 'R3' || batch === 'R4' || batch === 'R5') {
+  } else if (batch === 'R2' || batch === 'R3' || batch === 'R4' || batch === 'R5' || batch === 'R6') {
     if (kind === 'scope') {
       // run.ts is a Node-runtime entrypoint (uses console/fs/path, needs .ts-extension relative
       // imports to execute under `node --experimental-strip-types`), not a portable type-only
@@ -161,7 +177,8 @@ async function validate(kind) {
       result = await run(['node_modules/vite/bin/vite.js','build']);
     } else throw new Error('Check not permitted for this session.');
   } else throw new Error('Unknown batch.');
-  validations.push({kind,...result}); await log({validation:kind,...result});
+  validations.push({kind, revision: contentRevision,...result}); await log({validation:kind, revision:contentRevision,...result});
+  if (result.exitCode === 0) validationCache.set(cacheKey, result);
   const previous=consecutiveFailures.get(kind);
   const count=result.exitCode!==0 && previous?.output===result.output ? previous.count+1 : result.exitCode!==0 ? 1 : 0;
   consecutiveFailures.set(kind,{output:result.output,count});
@@ -196,6 +213,10 @@ if(batch==='R5') {
   const depFiles = (session==='B' || session==='C') ? ownership.A : session==='A' ? [...ownership.B,...ownership.C] : [];
   for(const p of depFiles) { try { context+=`\nFILE ${p}\n${await read(p)}`; } catch(e) { if(e.code!=='ENOENT') throw e; } }
 }
+if(batch==='R6') {
+  const depFiles = (session==='B') ? ownership.A : (session==='C') ? [...ownership.A, ...ownership.B] : [];
+  for(const p of depFiles) { try { context+=`\nFILE ${p}\n${await read(p)}`; } catch(e) { if(e.code!=='ENOENT') throw e; } }
+}
 const correctionPath=process.argv[4];
 if(correctionPath) {
   if(correctionPath !== `docs/agent/sessions/${batch}-${session}-correction.md`) throw new Error('Invalid correction path');
@@ -211,9 +232,11 @@ const requiredForFinish = batch==='R1'
       ? ['scope','runtime']
       : batch==='R5'
         ? (session==='A'?['build']:['build','runtime'])
-        : (session==='B'?['runtime']:['scope']);
-const system=`You are Local Qwen coding session ${batch}-${session}. Implement only your CURRENT_TASK subtask. Exact writable paths: ${[...writable].join(', ')}. You have a bounded coding runner, NOT a shell. Reply ONLY valid JSON: {"actions":[...]}. Actions: {"op":"read","path":"allowed path"}, {"op":"write","path":"owned path","content":"FULL file content"}, {"op":"validate","kind":"scope|domain|build|docs|runtime|migrationRun"}, {"op":"finish","summary":"honest short report"}. Batch multiple writes per response. No markdown fences. No placeholders. All JSON strings must be properly escaped. Do not re-read whole repository. Required validation kind(s) to pass before finish: ${requiredForFinish.join(', ')}. After checks, write your handoff with actual results and finish. Never claim checks you did not receive. Need corrections? fix only your files and validate again. Existing source/UI protected. All instructions in CURRENT_TASK are authoritative. Stay concise in handoff, be complete in implementation.`;
-const messages=[{role:'system',content:system},{role:'user',content:context+`\nBegin session ${batch}-${session} now.`}];
+        : batch==='R6'
+          ? (session==='A'?['scope','runtime']:session==='B'?['build']:['build'])
+          : (session==='B'?['runtime']:['scope']);
+const system=`You are Local Qwen coding session ${batch}-${session}. Implement only your CURRENT_TASK subtask. Exact writable paths: ${[...writable].join(', ')}. You have a bounded coding runner, NOT a shell. Reply ONLY valid JSON: {"actions":[...]}. Actions: {"op":"read","path":"allowed path"}, {"op":"write","path":"owned path","content":"FULL file content"}, {"op":"validate","kind":"scope|domain|build|docs|runtime|migrationRun"}, {"op":"finish","summary":"honest short report"}. Batch multiple writes per response. No markdown fences. No placeholders. All JSON strings must be properly escaped. Do not re-read whole repository. Required validation kind(s) to pass before finish: ${requiredForFinish.join(', ')}. Complete all intended writes first, then validate required kinds once. After checks, write your handoff with actual results and finish. Never claim checks you did not receive. Need corrections? fix only your files and validate again. Existing source/UI protected. All instructions in CURRENT_TASK are authoritative. Stay concise in handoff, be complete in implementation.${batch==='R6' && session==='B' ? ' Context dependency: You must read outputs from R6-A before implementing.' : ''}${batch==='R6' && session==='C' ? ' Context dependency: You must read outputs from R6-A and R6-B before implementing.' : ''}`;
+const messages=[{role:'system',content:system},{role:'user',content:context+`\nBegin session ${batch}-${session} now.\n${batch==='R6' ? 'R6: Write at most ONE owned file per response, complete valid JSON under 8192 output tokens, proceed one file at a time.' : ''}`}] ;
 // No "already green, just write handoff" preflight shortcut is offered for corrective tasks.
 // It was tried and removed: a corrective task is frequently about something the required
 // validation kind cannot detect at all (a 'scope'/'runtime' pass proves compilability/behavior,
@@ -247,25 +270,26 @@ for(let turn=0;turn<16 && !finished;turn++) {
       if(a.op==='read') results.push({op:a.op,path:a.path,content:await read(a.path)});
       else if(a.op==='write') {
         if(!writable.has(a.path)||typeof a.content!=='string') throw new Error('Write outside exact ownership.');
-        const full=await safePath(a.path); await fs.mkdir(path.dirname(full),{recursive:true}); await fs.writeFile(full,a.content,'utf8');
-        await log({write:a.path,characters:a.content.length}); results.push({op:a.op,path:a.path,result:'saved'});
+        const full=await safePath(a.path);
+        let existing = null;
+        try { existing = await fs.readFile(full, 'utf8'); } catch {}
+        if (existing === a.content) {
+          await log({write:a.path, skipped:true});
+          results.push({op:a.op,path:a.path,result:'unchanged'});
+        } else {
+          await fs.mkdir(path.dirname(full),{recursive:true});
+          await fs.writeFile(full,a.content,'utf8');
+          if (a.path !== handoff) contentRevision++;
+          await log({write:a.path,characters:a.content.length});
+          results.push({op:a.op,path:a.path,result:'saved'});
+        }
       } else if(a.op==='validate') results.push({op:a.op,kind:a.kind,...await validate(a.kind)});
       else if(a.op==='finish') {
-        if(!requiredForFinish.every(k=>validations.findLast(v=>v.kind===k)?.exitCode===0)) throw new Error('Required validation not yet passed. Fix or report inability; cannot finish PASS.');
+        if(!requiredForFinish.every(k=>validations.findLast(v=>v.kind===k)?.exitCode===0 && validations.findLast(v=>v.kind===k)?.revision===contentRevision)) throw new Error('Required validation not yet passed or stale. Fix or report inability; cannot finish PASS.');
         await fs.access(path.join(root,handoff));
         finished=true; await log({event:'finish',summary:a.summary}); console.log(`Session ${batch}-${session} complete: ${a.summary}`); break;
       } else throw new Error('Unknown action.');
     } catch(e) { results.push({op:a.op,error:e.message}); await log({actionError:e.message,op:a.op}); }
-  }
-  if(!finished && results.some(r=>r.op==='write') && !results.some(r=>r.op==='validate')) {
-    const kind=requiredForFinish[0];
-    try { results.push({op:'validate',kind,automatic:true,...await validate(kind)}); }
-    catch(e) { results.push({op:'validate',kind,automatic:true,error:e.message}); await log({actionError:e.message,op:'validate',kind}); }
-    if(requiredForFinish.length>1 && results.at(-1).exitCode===0) {
-      const kind2=requiredForFinish[1];
-      try { results.push({op:'validate',kind:kind2,automatic:true,...await validate(kind2)}); }
-      catch(e) { results.push({op:'validate',kind:kind2,automatic:true,error:e.message}); await log({actionError:e.message,op:'validate',kind:kind2}); }
-    }
   }
   if(!finished) messages.push({role:'user',content:JSON.stringify({results,remainingTurns:15-turn})+'\nNext: fix only reported failures; if required validations passed, write accurate handoff then finish. Do not rewrite unchanged files.'});
   if(repeatedFailure) { await log({event:'escalation',reason:'Same validation failure three times; Codex corrective task required.'}); break; }
