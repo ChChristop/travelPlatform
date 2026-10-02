@@ -93,6 +93,7 @@ function computeBounds(items: PlanItem[]): SimulationBounds {
     const { startMs, endMs } = getScheduleMs(item);
     if (startMs !== null) {
       if (startMs < minMs) minMs = startMs;
+      if (startMs > maxMs) maxMs = startMs;
       hasItems = true;
     }
     if (endMs !== null) {
@@ -103,6 +104,10 @@ function computeBounds(items: PlanItem[]): SimulationBounds {
 
   if (!hasItems) {
     throw new Error('No scheduled items found for plan version');
+  }
+
+  if (maxMs < minMs) {
+    throw new Error('Invalid bounds: end is before start');
   }
 
   return { startMs: minMs, endMs: maxMs };
@@ -185,12 +190,15 @@ function projectItems(session: SimulationSession): ProjectedItem[] {
   for (const item of items) {
     const { startMs, endMs, allDay } = getScheduleMs(item);
     
-    if (startMs === null || endMs === null) {
+    if (startMs === null) {
       continue;
     }
 
+    // Handle start-only items as point events
+    const effectiveEndMs = endMs !== null ? endMs : startMs + 1;
+
     const projStart = startMs + delayMs;
-    const projEnd = endMs + delayMs;
+    const projEnd = effectiveEndMs + delayMs;
 
     const { placeId, placeName } = getPrimaryPlace(item, activeState.places);
     const routeId = getPrimaryRouteId(item);
@@ -305,7 +313,15 @@ export function createInitialState(config: SimulationConfig): SimulationSession 
     throw new Error('No scheduled items found for plan version');
   }
 
-  const bounds = computeBounds(items);
+  let bounds = computeBounds(items);
+
+  // Extend end bound for delay scenarios
+  if (scenario) {
+    const delayMinutes = scenario.variables['delayMinutes'];
+    if (typeof delayMinutes === 'number' && Number.isFinite(delayMinutes) && delayMinutes >= 0) {
+      bounds = { ...bounds, endMs: bounds.endMs + delayMinutes * 60000 };
+    }
+  }
 
   let clockMs = initialClockMs ?? bounds.startMs;
   if (clockMs < bounds.startMs) clockMs = bounds.startMs;
@@ -398,15 +414,54 @@ export function applyScenario(session: SimulationSession, scenario: Scenario | n
     validateScenario(scenario, session.planVersionId, session.source);
   }
 
+  // Recompute bounds based on new scenario
+  const items = session.source.planItems.filter(i => i.planVersionId === session.planVersionId);
+  let bounds = computeBounds(items);
+
+  if (scenario) {
+    const delayMinutes = scenario.variables['delayMinutes'];
+    if (typeof delayMinutes === 'number' && Number.isFinite(delayMinutes) && delayMinutes >= 0) {
+      bounds = { ...bounds, endMs: bounds.endMs + delayMinutes * 60000 };
+    }
+  }
+
+  // Clamp clock into new bounds
+  let clockMs = session.clockMs;
+  if (clockMs < bounds.startMs) clockMs = bounds.startMs;
+  if (clockMs > bounds.endMs) clockMs = bounds.endMs;
+
+  // Stop playback if now at end
+  let playing = session.playing;
+  if (clockMs >= bounds.endMs) {
+    playing = false;
+  }
+
   return {
     ...session,
-    scenario
+    scenario,
+    bounds,
+    clockMs,
+    playing
   };
 }
 
 export function projectOptions(session: SimulationSession, optionalSelections?: { optionGroupId: OptionGroupId; optionId: PlanOptionId }[]): ActiveState {
   const selections = optionalSelections ?? session.scenario?.optionSelections ?? [];
-  
+
+  // Validate optional selections
+  for (const sel of selections) {
+    const group = session.source.optionGroups.find(g => g.id === sel.optionGroupId);
+    if (!group) {
+      throw new Error(`Invalid optionGroupId: ${sel.optionGroupId}`);
+    }
+    if (group.planVersionId !== session.planVersionId) {
+      throw new Error(`OptionGroup ${sel.optionGroupId} does not match planVersionId`);
+    }
+    if (!group.optionIds.includes(sel.optionId)) {
+      throw new Error(`Invalid optionId: ${sel.optionId} for group ${sel.optionGroupId}`);
+    }
+  }
+
   const projectedState: EntityState = {
     ...session.source,
     optionGroups: session.source.optionGroups.map(g => {

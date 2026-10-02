@@ -8,6 +8,7 @@ import { BookingView } from './features/booking/BookingView.jsx';
 import { CostView } from './features/cost/CostView.jsx';
 import { TasksView } from './features/tasks/TasksView.jsx';
 import { PlansView } from './features/plans/PlansView.jsx';
+import { SimulationView } from './features/simulation/SimulationView.jsx';
 import { deriveActiveState, previewOptionChange, commitOptionChange, updateBookingStatus, updateTaskStatus, addCostRecord, createOptionGroup } from '../store/commands/index.ts';
 
 export function PlatformApp() {
@@ -234,6 +235,10 @@ export function PlatformApp() {
           onCreateGroup={handleCreateGroup}
         />
       );
+    }
+
+    if (view === 'simulation') {
+      return <SimulationView state={state} />;
     }
 
     return null;

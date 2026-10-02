@@ -2,8 +2,8 @@ import React from 'react';
 
 /**
  * @param {{
- *   view: 'summary' | 'timeline' | 'map' | 'booking' | 'cost' | 'tasks' | 'plans';
- *   onNavigate: (view: 'summary' | 'timeline' | 'map' | 'booking' | 'cost' | 'tasks' | 'plans') => void;
+ *   view: 'summary' | 'timeline' | 'map' | 'booking' | 'cost' | 'tasks' | 'plans' | 'simulation';
+ *   onNavigate: (view: 'summary' | 'timeline' | 'map' | 'booking' | 'cost' | 'tasks' | 'plans' | 'simulation') => void;
  *   children: React.ReactNode;
  * }} props
  */
@@ -16,6 +16,7 @@ export function Shell({ view, onNavigate, children }) {
     { id: 'cost', label: '비용' },
     { id: 'tasks', label: '태스크' },
     { id: 'plans', label: '대안' },
+    { id: 'simulation', label: '시뮬레이션' },
   ];
 
   return (

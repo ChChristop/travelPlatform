@@ -1,31 +1,23 @@
-# R6 Handoff
+# Agent Handoff
 
-## Result
-- **Automated Gates**: PASS
-  - Booking/Cost/Task tests: 17/17 PASS
-  - Option tests: 9/9 PASS
-  - DataSource tests: 15/15 PASS
-  - Strict tsc (`src/store/commands/index.ts`): PASS
-  - `npm run build`: PASS (62 modules)
-- **Visual Validation**: Incomplete
-  - Browser in-app tool refused localhost (`net::ERR_BLOCKED_BY_CLIENT`). UI visual verification was not performed.
+## Current Status
+*   **Task:** R7 Deterministic SIM Implementation
+*   **Status:** Completed
+*   **Last Commit:** Local only (No push)
 
-## Changed Areas
-- **Command APIs**: Created pure command APIs for booking status, task status, costs, and option group preview/commit.
-- **Views**: Added new `Booking`, `Cost`, `Tasks`, and `Plans` views.
-- **State Management**: Implemented `PlatformApp` shared active projection and save-before-state update logic.
-- **Storage**: Added R6 storage key and corrupt-data handling.
-- **Bug Fixes**:
-  - Updated stale lodging test expectation to reflect intentional conversion of 55,000 KRW to 6,383 JPY (preserving KRW source text).
-  - Fixed `deriveActiveState` to hide booking-subject costs under inactive options; added preview regression test.
+## Verification Results
+*   **Engine:** `src/simulation/engine.ts` is pure, deterministic, and immutable. Handles explicit `EntityState`, `planVersion`, `scenario`, `seed`, and `clock`.
+*   **Tests:** `tests/simulation/engine.test.ts` passed 9/9.
+*   **Typecheck:** Strict `tsc` on `engine.ts` passed.
+*   **Build:** `npm run build` passed (65 modules).
+*   **Smoke Test:** Actual seed smoke test passed (51 items, finite bounds, snapshot current/next). Local delay scenario correctly extends end bound (600000ms) without mutating raw state.
+*   **UI:** `SimulationView.jsx` integrated into `PlatformApp` and `Shell` with in-memory navigation. Ephemeral local 10-minute delay scenario and source Scenario selector implemented. No persisted simulation state.
+*   **Visual Verification:** Unverified due to browser tool blocking localhost (`net::ERR_BLOCKED_BY_CLIENT`).
 
-## Validation
-- All automated tests and build checks passed on the final snapshot.
-- No push performed.
+## Next Steps
+*   **R8:** Not started.
+*   **Requirement:** R8 requires separate explicit user approval per `RUNNER_GUIDE`.
 
-## Risks
-- UI visual behavior is unverified due to browser tool restrictions. UI visual inspection remains outstanding because localhost browser access is blocked.
-
-## Next Steps (R7)
-- R7 is authorized to proceed after R6 commit.
-- Perform manual UI visual validation to confirm R6 changes render correctly.
+## Notes
+*   No source mutation or GPS/persistence side effects in the simulation engine.
+*   All changes are contained within the allowed scope defined in `CURRENT_TASK.md`.

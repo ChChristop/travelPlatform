@@ -24,6 +24,8 @@
   --nav-tasks-active: #be123c;
   --nav-plans: #4f46e5;
   --nav-plans-active: #4338ca;
+  --nav-simulation: #0891b2;
+  --nav-simulation-active: #0e7490;
 }
 
 * {
@@ -213,6 +215,24 @@ body {
 .nav-tab-plans.active {
   background: var(--nav-plans-active);
   border-color: var(--nav-plans-active);
+  color: #fff;
+}
+
+.nav-tab-simulation {
+  color: var(--nav-simulation);
+  border-color: var(--nav-simulation);
+}
+.nav-tab-simulation:hover {
+  background: var(--nav-simulation);
+  color: #fff;
+  border-color: var(--nav-simulation);
+}
+.nav-tab-simulation:focus-visible {
+  outline-color: var(--nav-simulation);
+}
+.nav-tab-simulation.active {
+  background: var(--nav-simulation-active);
+  border-color: var(--nav-simulation-active);
   color: #fff;
 }
 

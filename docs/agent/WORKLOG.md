@@ -86,3 +86,7 @@
 - R5 batch 완료. R6(예약/비용/Task/대안 변경) 착수는 다시 사용자 명시적 확인 필요 — batch별 Codex gate 원칙 유지.
 
 - R6 batch 완료: 예약/비용/Task/대안 변경 관련 순수 명령 API 및 신규 뷰(Booking/Cost/Tasks/Plans) 구현, PlatformApp 상태 관리 로직(공유 active projection, save-before-state update) 및 R6 스토리지 키/손상 데이터 처리 추가. 코디네이터가 발견한 숙박 테스트 기대값 오류(55,000 KRW → 6,383 JPY 변환 의도 반영) 및 비활성 옵션에서 비용이 노출되는 버그를 수정하고 회귀 테스트 추가. 최종 스냅샷에서 예약/비용/Task 테스트 17개, 옵션 테스트 9개, dataSource 테스트 15개 전부 통과, strict tsc 및 npm run build(62 modules) 성공. 브라우저 인앱 도구가 localhost를 차단(net::ERR_BLOCKED_BY_CLIENT)하여 UI 시각 검증은 미완료 상태로 유지하며, R7 착수는 사용자 명시적 확인 대기.
+
+R7 배치 완료: 결정론적 시뮬레이션 엔진(`src/simulation/engine.ts`)과 독립 UI(`SimulationView.jsx`) 구현. 엔진은 순수 함수 기반으로 상태 불변성, 시드/시나리오 기반 결정론, 시간 경계 제한(play/pause/speed/scrub)을 보장하며, 9/9 단위 테스트와 strict tsc, npm run build(65 modules) 모두 통과. 실제 시드 스모크 테스트에서도 51개 항목의 유한 경계와 스냅샷 정상 동작, 지연 시나리오 시 끝 경계 확장(600000ms) 및 원본 상태 무변화 확인.
+
+브라우저 인앱 도구가 localhost 접근을 차단(net::ERR_BLOCKED_BY_CLIENT)하여 UI 시각적 동작은 미검증 상태로 유지. R7은 완료 처리하며, R8 착수는 RUNNER_GUIDE에 따라 사용자 명시적 승인 대기.

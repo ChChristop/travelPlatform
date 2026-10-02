@@ -1,7 +1,7 @@
 # R7 Deterministic SIM Implementation Plan
 
 ## 1. Context & Status
-*   **Current State:** R6 committed (`d8007c6`).
+*   **Current State:** R7 Completed.
 *   **User Directive:** Proceed to next stage (R7).
 *   **Scope:** Deterministic Simulation Engine + Standalone UI.
 *   **Constraint:** No new npm dependencies. No legacy `src/App.jsx` edits. No auto-writes to persistence.
@@ -88,12 +88,12 @@ To prevent concurrent file conflicts, execution is split into two sequential ses
     *   Add styles for simulation controls, clock display, warnings.
 
 ## 4. Verification & Completion
-1.  **Typecheck:** Run `tsc --noEmit --strict --allowImportingTsExtensions --moduleResolution bundler --module esnext --target es2022 --lib "es2022,dom"` on engine entry.
-2.  **Tests:** Run `node --experimental-strip-types tests/simulation/engine.test.ts` to ensure all tests pass.
-3.  **Build:** Run `npm run build` to ensure no build errors.
+1.  **Typecheck:** Run `tsc --noEmit --strict --allowImportingTsExtensions --moduleResolution bundler --module esnext --target es2022 --lib "es2022,dom"` on engine entry. **PASS**
+2.  **Tests:** Run `node --experimental-strip-types tests/simulation/engine.test.ts` to ensure all tests pass. **9/9 PASS**
+3.  **Build:** Run `npm run build` to ensure no build errors. **PASS (65 modules)**
 4.  **UI Visual Check:**
-    *   If browser accessible: Verify UI renders, controls work, no console errors.
-    *   If not accessible: Record limitation in WORKLOG.
+    *   Browser in-app tool refuses localhost (`net::ERR_BLOCKED_BY_CLIENT`), so visual behavior remains unverified.
+    *   Actual seed smoke test PASS: 51 items, finite bounds, snapshot current/next; local delay extends end bound 600000ms and raw state unchanged.
 5.  **Commit:**
     *   Commit message: `R7: Deterministic SIM engine and standalone UI`
     *   No push.
@@ -102,10 +102,7 @@ To prevent concurrent file conflicts, execution is split into two sequential ses
     *   Explicitly state: **R8 not started.**
 
 ## 5. Handoff / Worklog
-*   **R7 Status:** In Progress (Session A: Engine & Tests).
+*   **R7 Status:** Completed.
 *   **Next Steps:**
-    1.  Implement `src/simulation/engine.ts`.
-    2.  Implement `tests/simulation/engine.test.ts`.
-    3.  Run typecheck and tests.
-    4.  Proceed to Session B (UI & Integration).
+    1.  R8 requires separate explicit user approval under RUNNER_GUIDE.
 *   **R8 Status:** Not started.
