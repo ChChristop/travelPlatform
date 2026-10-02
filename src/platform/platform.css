@@ -8,6 +8,22 @@
   --platform-danger: #e11d48;
   --platform-radius: 8px;
   --platform-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --platform-content-max: 820px;
+
+  --nav-summary: #475569;
+  --nav-summary-active: #334155;
+  --nav-timeline: #2563eb;
+  --nav-timeline-active: #1d4ed8;
+  --nav-map: #0d9488;
+  --nav-map-active: #0f766e;
+  --nav-booking: #7c3aed;
+  --nav-booking-active: #6d28d9;
+  --nav-cost: #d97706;
+  --nav-cost-active: #b45309;
+  --nav-tasks: #e11d48;
+  --nav-tasks-active: #be123c;
+  --nav-plans: #4f46e5;
+  --nav-plans-active: #4338ca;
 }
 
 * {
@@ -43,6 +59,7 @@ body {
   display: flex;
   gap: 4px;
   padding: 10px 16px;
+  flex-wrap: wrap;
 }
 
 .platform-nav-btn {
@@ -54,6 +71,7 @@ body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .platform-nav-btn:hover {
@@ -61,9 +79,140 @@ body {
   color: var(--platform-primary);
 }
 
+.platform-nav-btn:focus-visible {
+  outline: 2px solid var(--platform-primary);
+  outline-offset: 2px;
+}
+
 .platform-nav-btn.active {
   background: var(--platform-primary);
   border-color: var(--platform-primary);
+  color: #fff;
+}
+
+.nav-tab-summary {
+  color: var(--nav-summary);
+  border-color: var(--nav-summary);
+}
+.nav-tab-summary:hover {
+  background: var(--nav-summary);
+  color: #fff;
+  border-color: var(--nav-summary);
+}
+.nav-tab-summary:focus-visible {
+  outline-color: var(--nav-summary);
+}
+.nav-tab-summary.active {
+  background: var(--nav-summary-active);
+  border-color: var(--nav-summary-active);
+  color: #fff;
+}
+
+.nav-tab-timeline {
+  color: var(--nav-timeline);
+  border-color: var(--nav-timeline);
+}
+.nav-tab-timeline:hover {
+  background: var(--nav-timeline);
+  color: #fff;
+  border-color: var(--nav-timeline);
+}
+.nav-tab-timeline:focus-visible {
+  outline-color: var(--nav-timeline);
+}
+.nav-tab-timeline.active {
+  background: var(--nav-timeline-active);
+  border-color: var(--nav-timeline-active);
+  color: #fff;
+}
+
+.nav-tab-map {
+  color: var(--nav-map);
+  border-color: var(--nav-map);
+}
+.nav-tab-map:hover {
+  background: var(--nav-map);
+  color: #fff;
+  border-color: var(--nav-map);
+}
+.nav-tab-map:focus-visible {
+  outline-color: var(--nav-map);
+}
+.nav-tab-map.active {
+  background: var(--nav-map-active);
+  border-color: var(--nav-map-active);
+  color: #fff;
+}
+
+.nav-tab-booking {
+  color: var(--nav-booking);
+  border-color: var(--nav-booking);
+}
+.nav-tab-booking:hover {
+  background: var(--nav-booking);
+  color: #fff;
+  border-color: var(--nav-booking);
+}
+.nav-tab-booking:focus-visible {
+  outline-color: var(--nav-booking);
+}
+.nav-tab-booking.active {
+  background: var(--nav-booking-active);
+  border-color: var(--nav-booking-active);
+  color: #fff;
+}
+
+.nav-tab-cost {
+  color: var(--nav-cost);
+  border-color: var(--nav-cost);
+}
+.nav-tab-cost:hover {
+  background: var(--nav-cost);
+  color: #fff;
+  border-color: var(--nav-cost);
+}
+.nav-tab-cost:focus-visible {
+  outline-color: var(--nav-cost);
+}
+.nav-tab-cost.active {
+  background: var(--nav-cost-active);
+  border-color: var(--nav-cost-active);
+  color: #fff;
+}
+
+.nav-tab-tasks {
+  color: var(--nav-tasks);
+  border-color: var(--nav-tasks);
+}
+.nav-tab-tasks:hover {
+  background: var(--nav-tasks);
+  color: #fff;
+  border-color: var(--nav-tasks);
+}
+.nav-tab-tasks:focus-visible {
+  outline-color: var(--nav-tasks);
+}
+.nav-tab-tasks.active {
+  background: var(--nav-tasks-active);
+  border-color: var(--nav-tasks-active);
+  color: #fff;
+}
+
+.nav-tab-plans {
+  color: var(--nav-plans);
+  border-color: var(--nav-plans);
+}
+.nav-tab-plans:hover {
+  background: var(--nav-plans);
+  color: #fff;
+  border-color: var(--nav-plans);
+}
+.nav-tab-plans:focus-visible {
+  outline-color: var(--nav-plans);
+}
+.nav-tab-plans.active {
+  background: var(--nav-plans-active);
+  border-color: var(--nav-plans-active);
   color: #fff;
 }
 
@@ -83,6 +232,16 @@ body {
 
 .platform-error h2 {
   color: var(--platform-danger);
+}
+
+.platform-save-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--platform-radius);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .project-summary {

@@ -84,3 +84,5 @@
 - 홀리스틱 재검증: R1~R4 전체 typecheck 회귀 없음, 통합 런타임 테스트 99개 전부 통과, `npm run build` 통과(기존+새 entry), 기존 앱(`/`) 회귀 없음.
 - 사용자 요청으로 이번 세션 전체에서 축적된 운영 지식(local-runner.mjs 버그와 수정, 배치별 tsconfig 함정, JSX/CSS 관련 문제 등)을 Claude의 개인 메모리가 아니라 저장소 문서로 옮김 — [docs/agent/RUNNER_GUIDE.md](RUNNER_GUIDE.md) 신설, AGENT_WORKFLOW.md와 CURRENT_TASK.md에서 연결. 세션/에이전트가 바뀌어도 이 문서만으로 이어서 작업 가능하도록 의도.
 - R5 batch 완료. R6(예약/비용/Task/대안 변경) 착수는 다시 사용자 명시적 확인 필요 — batch별 Codex gate 원칙 유지.
+
+- R6 batch 완료: 예약/비용/Task/대안 변경 관련 순수 명령 API 및 신규 뷰(Booking/Cost/Tasks/Plans) 구현, PlatformApp 상태 관리 로직(공유 active projection, save-before-state update) 및 R6 스토리지 키/손상 데이터 처리 추가. 코디네이터가 발견한 숙박 테스트 기대값 오류(55,000 KRW → 6,383 JPY 변환 의도 반영) 및 비활성 옵션에서 비용이 노출되는 버그를 수정하고 회귀 테스트 추가. 최종 스냅샷에서 예약/비용/Task 테스트 17개, 옵션 테스트 9개, dataSource 테스트 15개 전부 통과, strict tsc 및 npm run build(62 modules) 성공. 브라우저 인앱 도구가 localhost를 차단(net::ERR_BLOCKED_BY_CLIENT)하여 UI 시각 검증은 미완료 상태로 유지하며, R7 착수는 사용자 명시적 확인 대기.

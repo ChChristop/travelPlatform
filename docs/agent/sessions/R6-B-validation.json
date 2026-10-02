@@ -1,0 +1,22 @@
+{
+  "batch": "R6",
+  "session": "B",
+  "finished": true,
+  "validations": [
+    {
+      "kind": "build",
+      "exitCode": 0,
+      "output": "vite v8.3.0 building client environment for production...\ntransforming...\n✓ 44 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/platform/index.html                0.58 kB │ gzip:  0.31 kB\ndist/index.html                         0.62 kB │ gzip:  0.33 kB\ndist/assets/platform-CsnoeP_-.css       5.53 kB │ gzip:  1.38 kB\ndist/assets/jsx-runtime-vh-t_kPv.css   15.09 kB │ gzip:  6.36 kB\ndist/assets/main-CrfgzoAM.css          23.17 kB │ gzip:  4.98 kB\ndist/assets/platform-D93f7tA1.js       14.78 kB │ gzip:  5.43 kB\ndist/assets/main-DPFAlYPO.js           28.71 kB │ gzip: 10.46 kB\ndist/assets/jsx-runtime-CmYs1sF6.js   304.58 kB │ gzip: 95.06 kB\n\n✓ built in 474ms\n"
+    },
+    {
+      "kind": "build",
+      "exitCode": 0,
+      "output": "vite v8.3.0 building client environment for production...\ntransforming...\n✓ 44 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/platform/index.html                0.58 kB │ gzip:  0.31 kB\ndist/index.html                         0.62 kB │ gzip:  0.33 kB\ndist/assets/platform-CsnoeP_-.css       5.53 kB │ gzip:  1.38 kB\ndist/assets/jsx-runtime-vh-t_kPv.css   15.09 kB │ gzip:  6.36 kB\ndist/assets/main-CrfgzoAM.css          23.17 kB │ gzip:  4.98 kB\ndist/assets/platform-D93f7tA1.js       14.78 kB │ gzip:  5.43 kB\ndist/assets/main-DPFAlYPO.js           28.71 kB │ gzip: 10.46 kB\ndist/assets/jsx-runtime-CmYs1sF6.js   304.58 kB │ gzip: 95.06 kB\n\n✓ built in 349ms\n"
+    },
+    {
+      "kind": "build",
+      "exitCode": 0,
+      "output": "vite v8.3.0 building client environment for production...\ntransforming...\n✓ 44 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/platform/index.html                0.58 kB │ gzip:  0.31 kB\ndist/index.html                         0.62 kB │ gzip:  0.33 kB\ndist/assets/platform-CsnoeP_-.css       5.53 kB │ gzip:  1.38 kB\ndist/assets/jsx-runtime-vh-t_kPv.css   15.09 kB │ gzip:  6.36 kB\ndist/assets/main-CrfgzoAM.css          23.17 kB │ gzip:  4.98 kB\ndist/assets/platform-D93f7tA1.js       14.78 kB │ gzip:  5.43 kB\ndist/assets/main-DPFAlYPO.js           28.71 kB │ gzip: 10.46 kB\ndist/assets/jsx-runtime-CmYs1sF6.js   304.58 kB │ gzip: 95.06 kB\n\n✓ built in 339ms\n"
+    }
+  ]
+}

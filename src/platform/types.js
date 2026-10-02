@@ -3,6 +3,9 @@
  * @typedef {import('../domain/plan.ts').PlanItem} PlanItem
  * @typedef {import('../domain/place.ts').Place} Place
  * @typedef {import('../domain/project.ts').TravelProject} TravelProject
+ * @typedef {import('../store/commands/option.ts').PreviewState} PreviewState
+ * @typedef {import('../store/commands/option.ts').CreateOptionGroupInput} CreateOptionGroupInput
+ * @typedef {import('../store/commands/option.ts').ActiveState} ActiveState
  */
 
 /**

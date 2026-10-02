@@ -41,4 +41,8 @@ export interface CostRecord {
     end?: ISODate;
   };
   payment?: PaymentInfo;
+  sourcePriceText?: string;
+  estimateRange?: { min: Money; max: Money };
+  pricingSourceUrl?: string;
+  pricingNote?: string;
 }

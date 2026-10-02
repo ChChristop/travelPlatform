@@ -1,0 +1,471 @@
+.booking-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: var(--platform-content-max);
+  margin: 0 auto;
+}
+
+/* ---------- 헤더 ---------- */
+.booking-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--platform-border);
+}
+
+.booking-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--platform-text);
+}
+
+.booking-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--platform-muted);
+}
+
+/* ---------- 빈 상태 ---------- */
+.booking-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 56px 24px;
+  text-align: center;
+  background: var(--platform-surface);
+  border: 1px dashed var(--platform-border);
+  border-radius: 12px;
+  color: var(--platform-muted);
+}
+
+.booking-empty h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--platform-text);
+}
+
+.booking-empty p {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.booking-btn-secondary {
+  border: 1px solid var(--platform-primary);
+  background: var(--platform-surface);
+  color: var(--platform-primary);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.booking-btn-secondary:hover {
+  background: var(--platform-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+/* ---------- 리스트 / 카드 ---------- */
+.booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.booking-card {
+  background: var(--platform-surface);
+  border: 1px solid var(--platform-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.booking-card:hover {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.booking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f6f9fc 100%);
+  border-bottom: 1px solid var(--platform-border);
+}
+
+.booking-card-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.booking-card-title {
+  margin: 0;
+  color: var(--platform-text);
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: -0.25px;
+}
+
+/* ---------- 배지 (타입 / 상태) ---------- */
+.booking-type-badge,
+.booking-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.booking-type-badge::before,
+.booking-status-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.booking-type-badge {
+  text-transform: uppercase;
+}
+
+.booking-type-hotel { background: #dbeafe; color: #1e40af; }
+.booking-type-restaurant { background: #fef3c7; color: #92400e; }
+.booking-type-flight { background: #e0e7ff; color: #3730a3; }
+.booking-type-ticket { background: #d1fae5; color: #065f46; }
+.booking-type-transport { background: #f3e8ff; color: #6b21a8; }
+.booking-type-tour { background: #fce7f3; color: #9d174d; }
+.booking-type-other { background: #f1f5f9; color: #475569; }
+
+.booking-status-draft { background: #f1f5f9; color: #64748b; }
+.booking-status-requested { background: #fef3c7; color: #92400e; }
+.booking-status-confirmed { background: #d1fae5; color: #065f46; }
+.booking-status-cancelled { background: #fee2e2; color: #991b1b; }
+.booking-status-completed { background: #dbeafe; color: #1e40af; }
+.booking-status-failed { background: #fee2e2; color: #991b1b; }
+
+/* ---------- 카드 본문 / 섹션 ---------- */
+.booking-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fbfdff;
+}
+
+.booking-section-title {
+  position: relative;
+  padding-left: 14px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--platform-text);
+  letter-spacing: -0.1px;
+}
+
+.booking-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--platform-primary);
+}
+
+/* ---------- 디테일 행 ---------- */
+.booking-details,
+.booking-policy-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-detail-row {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px dashed #eef2f6;
+}
+
+.booking-detail-row:last-child {
+  border-bottom: none;
+}
+
+.booking-detail-row dt {
+  color: var(--platform-muted);
+  font-weight: 600;
+}
+
+.booking-detail-row dd {
+  margin: 0;
+  color: var(--platform-text);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.booking-detail-row dd a {
+  color: var(--platform-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.booking-detail-row dd a:hover {
+  border-bottom-color: var(--platform-primary);
+}
+
+.booking-plan-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--platform-text);
+}
+
+.booking-plan-items li {
+  position: relative;
+  padding-left: 18px;
+  font-weight: 500;
+}
+
+.booking-plan-items li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: #cbd5e1;
+}
+
+.booking-plan-item-schedule {
+  margin-left: 8px;
+  color: var(--platform-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.booking-cost-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.booking-cost-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 11px;
+  border: 1px solid #e8eef5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.booking-cost-description {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.booking-cost-type {
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #dbeafe;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.booking-cost-type-actual { color: #047857; background: #d1fae5; }
+.booking-cost-type-refund { color: #b91c1c; background: #fee2e2; }
+.booking-cost-category { color: var(--platform-muted); }
+
+.booking-cost-amount {
+  color: var(--platform-text);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.booking-muted {
+  margin: 0;
+  font-size: 13px;
+  color: var(--platform-muted);
+  font-style: italic;
+}
+
+/* ---------- 상태 변경 버튼 ---------- */
+.booking-status-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-status-btn {
+  border: 1px solid var(--platform-border);
+  background: var(--platform-surface);
+  color: var(--platform-muted);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.booking-status-btn:hover {
+  border-color: #cbd5e1;
+  color: var(--platform-text);
+  background: #f8fafc;
+}
+
+.booking-status-btn.active {
+  color: #fff;
+  background: var(--platform-primary);
+  border-color: var(--platform-primary);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.booking-status-btn-draft.active { background: #64748b; border-color: #64748b; box-shadow: 0 2px 6px rgba(100, 116, 139, 0.25); }
+.booking-status-btn-requested.active { background: #d97706; border-color: #d97706; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25); }
+.booking-status-btn-confirmed.active { background: #059669; border-color: #059669; box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25); }
+.booking-status-btn-cancelled.active { background: #e11d48; border-color: #e11d48; box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25); }
+.booking-status-btn-completed.active { background: #2563eb; border-color: #2563eb; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25); }
+.booking-status-btn-failed.active { background: #dc2626; border-color: #dc2626; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25); }
+
+/* ---------- 정책만 존재하는 항목 ---------- */
+.booking-policy-only-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-policy-only-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--platform-text);
+}
+
+.booking-policy-only-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.booking-policy-card {
+  background: var(--platform-surface);
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.booking-policy-card:hover {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+  border-color: var(--platform-primary);
+}
+
+.booking-policy-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (max-width: 600px) {
+  .booking-card-header {
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+
+  .booking-card-title {
+    font-size: 16px;
+  }
+
+  .booking-card-body {
+    padding: 12px;
+  }
+
+  .booking-section {
+    padding: 12px;
+  }
+
+  .booking-cost-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .booking-cost-amount {
+    text-align: left;
+  }
+}
+
+.booking-policy-item-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--platform-text);
+}
+
+.booking-policy-item-id {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--platform-muted);
+  letter-spacing: 0.3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
